@@ -75,7 +75,11 @@ Pu238 & 1.23E-4 & 1.27E-4 & -3.01 & 1.85E-4 & 1.86E-4 & 0.41 & 2.52E-4 & 2.55E-4
 Pu239 & 5.15E-3 & 5.25E-3 & -1.95 & 5.41E-3 & 5.45E-3 & -0.66 & 5.64E-3 & 5.67E-3 & -0.57 \\
 Pu240 & 2.38E-3 & 2.4E-3 & -0.97 & 2.60E-3 & 2.61E-3 & -0.25 & 2.78E-3 & 2.79E-3 & -0.4 \\
 Pu241 & 1.30E-3 & 1.35E-3 & -3.69 & 1.48E-3 & 1.52E-3 & -2.74 & 1.62E-3 & 1.62E-3 & 0.02 \\
-Pu242 & 5.43E-4 & 5.48E-4 & -0.88 & 6.92E-4 & 6.93E-4 & -0.10 & 8.17E-4 & 8.19E-04 & 0.28
+Pu242 & 5.43E-4 &  & -0.88 & 6.92E-4 & 6.93E-4 & -0.10 & 8.17E-4 & 8.19E-04 & 0.28 \\
+Am241 & 3.56E-5 &  &  & 4.59E-5 &  &  & 5.55E-5 &  &  \\
+Am243 & 9.38E-5 &  &  & 1.37E-4 &  &  & 1.76E-4 &  &  \\
+Cm242 & 1.38E-5 &  &  & 1.88E-5 &  &  & 2.33E-5 &  &  \\
+Cm244 & 2.79E-5 &  &  & 4.38E-5 &  &  & 7.06E-5 &  & 
 \end{tabular}
 \end{table}
 
@@ -154,6 +158,48 @@ Table 4 and Table 5 are repeats of Table 2 and Table 3 for the 3.6$\%$ enriched 
 \section{MOX Case}
 Simply replicating the behavior of a light water reactor would not show off the full capabilities of the XSGen software. To demonstrate the capability of the system to extend to more advanced reactor types, XSGen will be used to generate a MOX fuel library for Bright-lite. It will then be used to simulate a single pass MOX reactor. In order to compare this on an apples to apples basis, the input fuel into the Bright-lite reactor will be exactly the same as that for a similar VISION reactor. This test will be able to demonstrate the flexibility of the combined XSGen/Bright-lite system that allows it to model advanced reactor types. 
 
+\begin{table}[]
+\centering
+\caption{MOX Input Table Caption.}
+\label{Table 7}
+\begin{tabular}{ll}
+Isotope & Mass Fraction\\
+U234 & 2.2E-4\\
+U235 & 7.08E-3\\
+U236 & 5.28E-3\\
+U238 & 8.8E-1\\
+Pu238 & 2.85E-3\\
+Pu239 & 5.66E-2\\ 
+Pu240 & 2.70E-2\\
+Pu241 & 1.17E-2\\
+Pu242 & 8.00E-3\\
+Am241 & 1.18E-3
+\end{tabular}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{MOX Results Table Caption.}
+\label{Table 7}
+\begin{tabular}{llll}
+Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
+Isotope & Vision & Bright-lite & Difference \\
+U234 & 2.2E-4 & & \\
+U235 & 7.08E-3 & & \\
+U236 & 5.28E-3 & & \\
+U238 & 8.8E-1 & & \\
+Pu238 & 2.85E-3 & & \\
+Pu239 & 5.66E-2 & & \\ 
+Pu240 & 2.70E-2 & & \\
+Pu241 & 1.17E-2 & & \\
+Pu242 & 8.00E-3 & & \\
+Am241 & 1.18E-3 & & \\
+Am243 & & & \\
+Cm242 & & & \\
+CM244 & & & 
+Equil. & 42.50 & 0.81 & 0..827 & 1.223
+\end{tabular}
+\end{table}
 
 
 
