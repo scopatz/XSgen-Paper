@@ -17,7 +17,9 @@ Monteburns functions very similar to the burn card currently in MCNP. It extract
 XSGen is a new methodology aimed at developing higher accuracy cross sections. Similar to the work flow of Monteburns, it couples a Monte Carlo software with a Bateman Equation solver.  By coupling the two software it is possible to generate fluence dependent values for neutron production, destruction, and transmutation matrices for each isotope as the flux spectrum within a reactor evolves. It provides the capability to investigate any cross section that exists in ENDF, EAF, and ACE cross section databases, to collapse them into single or multigroup cross sections, and to provide the data required by Bright-lite directly. 
 
 \section{XSGen Work Flow}
-The XSGen work flow is composed of 3 main parts as mentioned above. The first step is the simulation of the reactor core using a Monte Carlo simulation. The results of this are then taken in by a wrapping software and converted into one group cross sections for a specific reactor. These cross sections are then used inside of the Bateman Equation software to calculation the burnup, neutron production, neutron destruction, and transmutation matrixes. This values are calculated at a user defined time length. The composition of the material at the end of the time step is then returned to the Monte Carlo simulator and the process is repeated. 
+The XSGen work flow is composed of 3 main parts as mentioned above. The first step is the simulation of the reactor core using a Monte Carlo simulation. The results of this are then taken in by a wrapping software and converted into one group cross sections for a specific reactor. These cross sections are then used inside of the Bateman Equation software to calculation the burnup, neutron production, neutron destruction, and transmutation matrixes. This values are calculated at a user defined time length. The composition of the material at the end of the time step is then returned to the Monte Carlo simulator and the process is repeated.
+
+INSERT XSGEN WORK FLOW CHART 
 
 \subsection{OpenMC}
 The software chosen to perform the Monte Carlo operations was OpenMC [OpenMC citation].  OpenMC was chosen due to its open source nature and ability to quickly perform the calculation required. The only information required from the results of the OpenMC run is the group fluxes. These are used later to calculation one group cross sections. 
@@ -36,8 +38,9 @@ Note, that the cross sections used in this calculation must be provided by an ou
 
 Next a partial energy matrix (PEM) is constructed. This maps a higher resolution group structures to lower resolution group structures. It does this by determining the contribution of each of the higher resolution energy groups into the lower resolution energy groups using a weighted sum. As this calculation can be computationally expensive it is only performed once per time step. 
 
-For the current use case of XSGen this lower group structure is always a one group, however it is not limited to that. The PEM is also able to map lower energy groups into higher energy group structures, but that is also not used by XSGen.  
+PEM CALCULATION
 
+For the current use case of XSGen this lower group structure is always a one group, however it is not limited to that. The PEM is also able to map lower energy groups into higher energy group structures, but that is also not used by XSGen.  
 
 Once the PEM is constructed a collapsed flux is generated. Again, this collapses a detailed group structure into a single group. 
 
