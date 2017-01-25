@@ -34,9 +34,10 @@ Here all isotopes in the fuel are included in the set of X, and Y is the isotope
 
 Note, that the cross sections used in this calculation must be provided by an outside source. PyNE is capable of reading in cross sections from several different cross section libraries including; ENDF, Cinder, EAF, and OpenMC. In this case the OpenMC cross sections were used. 
 
-Next a partial energy matrix (PEM) is constructed. This maps a higher resolution group structures to lower resolution group structures. For the use case of XSGen this lower group structure is always a one group. 
+Next a partial energy matrix (PEM) is constructed. This maps a higher resolution group structures to lower resolution group structures. It does this by determining the contribution of each of the higher resolution energy groups into the lower resolution energy groups using a weighted sum. As this calculation can be computationally expensive it is only performed once per time step. 
 
-Insert PEM creation formula
+For the current use case of XSGen this lower group structure is always a one group, however it is not limited to that. The PEM is also able to map lower energy groups into higher energy group structures, but that is also not used by XSGen.  
+
 
 Once the PEM is constructed a collapsed flux is generated. Again, this collapses a detailed group structure into a single group. 
 
@@ -63,11 +64,11 @@ The XSGen/Bright-light will be benchmarked against VISION at 3.0, 3.5, 4.0, and 
 The two cases being used to test XSGen in startup behavior will be a 3.1$\%$ enriched light water reactor using four batches and a 3.6$\%$ enriched light water reactor using four batches. The cases will be compared using burnups, isotopic composition of fresh and used fuel.
 
 \subsection{Results}
-\begin{table}[]
+\begin{table}[!htb]
 \centering
 \caption{A comparison of the output isotopics at equalibrium in the VISION fuel cycle simulator and the XSGen-Bright-lite system.}
-\label{Table 1}
-\begin{tabular}{llllllllll}
+\label{tab:a}
+\begin{tabular}{cccccccccc}
  & \multicolumn{3}{c}{3.0\%} & \multicolumn{3}{c}{3.5\%} & \multicolumn{3}{c}{4.0\%} \\
 Isotope & VISION & XSGen-BL & Diff & VISION & XSGen-BL & Diff & VISION & XSGen-BL & Diff \\
 U235 & 6.75E-3 & 6.70E-03 & 0.78 & 6.80E-3 & 6.71E-3 & 1.30 & 6.95E-3 & 6.91E-3 & 0.562 \\
@@ -75,20 +76,23 @@ Pu238 & 1.23E-4 & 1.27E-4 & -3.01 & 1.85E-4 & 1.86E-4 & 0.41 & 2.52E-4 & 2.55E-4
 Pu239 & 5.15E-3 & 5.25E-3 & -1.95 & 5.41E-3 & 5.45E-3 & -0.66 & 5.64E-3 & 5.67E-3 & -0.57 \\
 Pu240 & 2.38E-3 & 2.4E-3 & -0.97 & 2.60E-3 & 2.61E-3 & -0.25 & 2.78E-3 & 2.79E-3 & -0.4 \\
 Pu241 & 1.30E-3 & 1.35E-3 & -3.69 & 1.48E-3 & 1.52E-3 & -2.74 & 1.62E-3 & 1.62E-3 & 0.02 \\
-Pu242 & 5.43E-4 &  & -0.88 & 6.92E-4 & 6.93E-4 & -0.10 & 8.17E-4 & 8.19E-04 & 0.28 \\
-Am241 & 3.56E-5 &  &  & 4.59E-5 &  &  & 5.55E-5 &  &  \\
-Am243 & 9.38E-5 &  &  & 1.37E-4 &  &  & 1.76E-4 &  &  \\
-Cm242 & 1.38E-5 &  &  & 1.88E-5 &  &  & 2.33E-5 &  &  \\
-Cm244 & 2.79E-5 &  &  & 4.38E-5 &  &  & 7.06E-5 &  & 
+Pu242 & 5.43E-4 & 5.48E-4 & -0.88 & 6.92E-4 & 6.93E-4 & -0.10 & 8.17E-4 & 8.19E-04 & 0.28 \\
+Am241 & 3.56E-5 & 3.86E-5 & -8.81 & 4.59E-5 & 5.17E-5 & -12.60 & 5.55E-5 & 6.04E-5 & -8.79 \\
+Am243 & 9.38E-5 & 9.01E-5 & 3.94 & 1.37E-4 & 1.26E-4 & 7.47 & 1.76E-4 & 1.74E-4 & 1.40 \\
+Cm242 & 1.38E-5 & 1.34E-5 & 3.19 & 1.88E-5 & 1.79E-5 & 4.91 & 2.33E-5 & 2.31E-5 & 0.83 \\
+Cm244 & 2.79E-5 & 2.57E-5 & 7.94 & 4.38E-5 & 4.54E-5 & 6.06 & 7.06E-5 & 7.00E-5 & 0.90
 \end{tabular}
 \end{table}
 
-@Table 1 shows a very strong agreement between VISION and Bright-light results using datasets created from light water reactors designed to these particular enrichments. Bright-light has been benchmarked [Bright-lite citations] against VISION previously using other datasets. This shows that given XSGen generated datasets allows for Bright-lite to match to within a 5\% tolerance of VISION. These results are an improvement over previous benchmarking attempts with Bright-lite. 
 
-\begin{table}[]
+Table \ref{tab:a} shows a very strong agreement between VISION and Bright-light results using datasets created from light water reactors designed to these particular enrichments. Bright-light has been benchmarked [Bright-lite citations] against VISION previously using other datasets. This shows that given XSGen generated datasets allows for Bright-lite to match VISION to a 5\% tolence for a majority of isotopes. Those that exhibit the greatest deviations are high order transuranics. 
+
+Am241 shows the largest deviations from the VISION data. There is more Am241 in every case than expected by the VISION results, and less of the species that are arise due to the presence of Am241; Am243, Cm242, Cm244. These results can be explained by a neutron absorption cross section error in Am241. If the neutron absorption cross section for Am241 is too low it can never transmute into Am242 and Am243, which in turn leads to an absence of curium isotopes. 
+
+\begin{table}[!htb]
 \centering
 \caption{NEA core discharge data for a 3.1\% enriched light water reactor with startup behavior.}
-\label{Table 2}
+\label{tab:b}
 \begin{tabular}{lllll}
 Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
 1 & 12.04 & 0.64 & 0.464 & 0.633 \\
@@ -99,10 +103,10 @@ Equil. & 33.00 & 0.85 & 0.688 & 0.943
 \end{tabular}
 \end{table}
 
-\begin{table}[]
+\begin{table}[!htb]
 \centering
 \caption{The startup values and percent difference from the NEA data for the XSGen/Bright-lite reactor system.}
-\label{Table 3}
+\label{tab:c}
 \begin{tabular}{lllllllll}
  & \multicolumn{2}{l}{Burnup (MWd/kgIHM)} & \multicolumn{2}{l}{U235 (\%)} & \multicolumn{2}{l}{Fissile Pu (\%)} & \multicolumn{2}{l}{Total Pu (\%)} \\
 Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
@@ -115,14 +119,14 @@ Equal. & 33.020 & 0.060 & 0.855 & 0.588 & 0.700 & 1.833 & 0.951 & 0.820
 \end{tabular}
 \end{table}
 
-Table 3 shows how XSGen/Bright-lite compares to the NEA results. The equilibrium results here show good agreement with this case. As Bright-lite is often used to derive output isotopics from used fuels to be passed onto recycle scenarios, accurately predicting the equilibrium output isotopics is important. 
+Table \ref{tab:b} shows how XSGen/Bright-lite compares to the NEA results. The equilibrium results here show good agreement with this case. As Bright-lite is often used to derive output isotopics from used fuels to be passed onto recycle scenarios, accurately predicting the equilibrium output isotopics is important. 
 
-The startup results however, show some discrepancies. The amount of plutonium generated within the first batch is significantly higher within Bright-lite compared to the NEA data. This trend only continues for the first two cycles. Due to the way Bright-lite operates, this is caused by the lower enriched batches within the startup core that do not have neutron poisons from fission products or other actinides. This means that there is a higher effective flux striking a high amount of U238 causing more generation of Pu239. The NEA benchmark has these low enrichment startup batches spread more evenly, Bright-lite has them all inside the inner most part of the circle. 
+The results of the start up isotopics can be seen in Table \ref{tab:c}. There are some discrepencies in these results. First, the amount of plutonium generated within the first batch is significantly higher within Bright-lite compared to the NEA data. This trend only continues for the first two cycles. Due to the way Bright-lite operates, this is caused by the lower enriched batches within the startup core that do not have neutron poisons from fission products or other actinides. This means that there is a higher effective flux striking a high amount of U238 causing more generation of Pu239. The NEA benchmark has these low enrichment startup batches spread more evenly, Bright-lite has them all inside the inner most part of the circle. 
 
-\begin{table}[]
+\begin{table}[!htb]
 \centering
 \caption{NEA data for a 3.6\% enriched light water reactor start up behavior.}
-\label{Table 4}
+\label{tab:d}
 \begin{tabular}{lllll}
 Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
 1 & 13.9 & 0.840 & 0.474 & 0.629 \\
@@ -135,10 +139,10 @@ Equil. & 42.50 & 0.81 & 0..827 & 1.223
 \end{tabular}
 \end{table}
 
-\begin{table}[]
+\begin{table}[!htb]
 \centering
 \caption{XSGen / Bright-lite data for the 3.6\% enriched light water reactor start up behavior.}
-\label{Table 5}
+\label{tab:e}
 \begin{tabular}{lllllllll}
  & \multicolumn{2}{l}{Burnup (MWd/kgIHM)} & \multicolumn{2}{l}{U235 (\%)} & \multicolumn{2}{l}{Fissile Pu (\%)} & \multicolumn{2}{l}{Total Pu (\%)} \\
 Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
@@ -153,15 +157,15 @@ Equal. & 42.32 & 0.43 & 0.81 & 0.44 & 0.79 & 4.54 & 1.11 & 9.424
 \end{tabular}
 \end{table}
 
-Table 4 and Table 5 are repeats of Table 2 and Table 3 for the 3.6$\%$ enriched light water reactor. Again, you see a similar trend in these two with the exception that the equilibrium results for the total amount of plutonium within the reactor is 9.2$\%$ lower in the Bright-lite model. The amount of fissile plutonium is also lower, but within acceptable bounds. The lower amount of fissile plutonium leads to less transmutations into the high order actinides. 
+Table \ref{tab:d} and Table \ref{tab:e} are repeats of Table 2 and Table 3 for the 3.6$\%$ enriched light water reactor. Again, you see a similar trend in these two with the exception that the equilibrium results for the total amount of plutonium within the reactor is 9.2$\%$ lower in the Bright-lite model. The amount of fissile plutonium is also lower, but within acceptable bounds. The lower amount of fissile plutonium leads to less transmutations into the high order actinides. 
 
 \section{MOX Case}
 Simply replicating the behavior of a light water reactor would not show off the full capabilities of the XSGen software. To demonstrate the capability of the system to extend to more advanced reactor types, XSGen will be used to generate a MOX fuel library for Bright-lite. It will then be used to simulate a single pass MOX reactor. In order to compare this on an apples to apples basis, the input fuel into the Bright-lite reactor will be exactly the same as that for a similar VISION reactor. This test will be able to demonstrate the flexibility of the combined XSGen/Bright-lite system that allows it to model advanced reactor types. 
 
-\begin{table}[]
+\begin{table}[!htb]
 \centering
 \caption{MOX Input Table Caption.}
-\label{Table 7}
+\label{tab:f}
 \begin{tabular}{ll}
 Isotope & Mass Fraction\\
 U234 & 2.2E-4\\
@@ -177,27 +181,25 @@ Am241 & 1.18E-3
 \end{tabular}
 \end{table}
 
-\begin{table}[]
+\begin{table}[!htb]
 \centering
 \caption{MOX Results Table Caption.}
-\label{Table 7}
-\begin{tabular}{llll}
-Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
+\label{tab:g}
+\begin{tabular}{lllll}
 Isotope & Vision & Bright-lite & Difference \\
-U234 & 2.2E-4 & & \\
-U235 & 7.08E-3 & & \\
-U236 & 5.28E-3 & & \\
-U238 & 8.8E-1 & & \\
-Pu238 & 2.85E-3 & & \\
-Pu239 & 5.66E-2 & & \\ 
-Pu240 & 2.70E-2 & & \\
-Pu241 & 1.17E-2 & & \\
-Pu242 & 8.00E-3 & & \\
-Am241 & 1.18E-3 & & \\
+U234 & & & \\
+U235 & & & \\
+U236 & & & \\
+U238 & & & \\
+Pu238 & & & \\
+Pu239 & & & \\ 
+Pu240 & & & \\
+Pu241 & & & \\
+Pu242 & & & \\
+Am241 & & & \\
 Am243 & & & \\
 Cm242 & & & \\
 CM244 & & & 
-Equil. & 42.50 & 0.81 & 0..827 & 1.223
 \end{tabular}
 \end{table}
 
