@@ -226,9 +226,9 @@ CM244 & - & 1.03E-3 & 9.84E-4 & -4.4
 \end{tabular}
 \end{table}
 
-The data in Table \ref{tab:g} shows that the results of Bright-lite given the new XSGen MOX reactor cross section fairs quite well compared to VISION. There are some outliers in the behaviors, specifically the higher order species and U236. 
+The data in Table \ref{tab:g} shows that the results of Bright-lite given the new XSGen MOX reactor cross section fairs quite well compared to VISION. There are some outliers in the behaviors, specifically the higher order species and U236. The issues with the higher order actinides, Am241 and higher, most likely stem from the high amount of Pu240. This suggest that Pu240 is not transmuting into Pu241 at a high enough rate, which therefore lowers the equalibrium concentration of Pu241 and all isotopes that derive from it. 
 
-One of the possible primary causes of this is uncertainity in the exact dimensions and behavior of the VISION MOX reactor. In order to get the most accurate results XSGen needs to know the specification of the MOX reactor. Instead for this result a generic 17x17 MOX core was chosen. 
+One of the possible primary causes of this is uncertainity in the exact dimensions and behavior of the VISION MOX reactor. In order to get the most accurate results XSGen needs to know the specification of the MOX reactor. Instead for this work a generic 17x17 light water reactor core was chosen to use as a base for the XSGen run. If the input and output compositions generated for VISION were made from a reactor core of a different design it would result in slightly different cross sections and therefore different behavior. 
 
 \end{document}
 
