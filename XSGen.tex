@@ -72,15 +72,13 @@ Input templates for OpenMC can be added to the XSGen system as need reactor type
 \subsection{PyNE}
 PyNE, or Python for Nuclear Engineering [PyNE citation], is the software used to perform the group collapse. The functionality to perform this group collapse was added to PyNE to facilitate the coupling of these two software. The collapse is performed using the following method. 
 
-Next a partial energy matrix (PEM) is constructed. This maps a higher resolution group structures to lower resolution group structures. It does this by determining the contribution of each of the higher resolution energy groups into the lower resolution energy groups using a weighted sum. As this calculation can be computationally expensive it is only performed once per time step. 
+The first step is the creation of a partial energy matrix (PEM). This matrix maps a higher resolution group structures to lower resolution group structures. It does this by determining the contribution of each of the higher resolution energy groups into the lower resolution energy groups using a weighted sum. As this calculation can be computationally expensive it is only performed once per time step. It is important to note that the dimensions of the PEM are set, and only work the two group structures used to create it. 
 
 PEM CALCULATION
 
-For the current use case of XSGen this lower group structure is always a one group, however it is not limited to that. The PEM is also able to map lower energy groups into higher energy group structures, but that is also not used by XSGen.  
+For the current use case of XSGen this lower group structure is always a one group, however it is not limited to that. The PEM is also able to map lower energy groups into higher energy group structures, but that is also not used by XSGen. The following equations shows the matrix mathematics for shifting a given group structure into a desired one using the PEM. 
 
-Once the PEM is constructed a collapsed flux is generated. Again, this collapses a detailed group structure into a single group. 
-
-$$\sigma_g = PEM ∙(\sigma*\omega)$$
+$$\phi_g = PEM ∙(\phi)$$
 
 Here, \begin{math}\phi\end{math} represents the vector of group fluxes, and $\phi_g$ is the collapsed flux. With the one group flux it is possible to generate the one group cross sections. 
 
