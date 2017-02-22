@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{tikz}
 \usepackage{array}
+\usepackage{calc}
 \usepackage{setspace}
 \usetikzlibrary{shapes.geometric, arrows}
 
@@ -9,6 +10,8 @@
 \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30, text width = 2cm]
 \tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30, text width = 2cm]
 \tikzstyle{arrow} = [thick,->,>=stealth]
+
+\newcommand\mTW{1.25cm}
 
 \begin{document}
 \title{XSGen}
@@ -95,7 +98,7 @@ Here all isotopes in the fuel are included in the set of X, and Y is the isotope
 Note, that the cross sections used in this calculation must be provided by an outside source. PyNE is capable of reading in cross sections from several different cross section libraries including; ENDF, Cinder, EAF, and OpenMC. In this case the OpenMC cross sections were used.  
 
 The effects of self shielding on U235 inside of a fuel pellet can be seen in Figure \ref{fig:index}.
-\begin{figure}[h!]
+\begin{figure}[h]
   \center
   \includegraphics[scale=0.8]{index.png}
   \caption{The effects of self-shielding on the cross sections for Uranium 235.}
@@ -117,20 +120,23 @@ The XSGen/Bright-light will be benchmarked against VISION at 3.0, 3.5, 4.0, and 
 The two cases being used to test XSGen in startup behavior will be a 3.1$\%$ enriched light water reactor using four batches and a 3.6$\%$ enriched light water reactor using four batches. The cases will be compared using burnups, isotopic composition of fresh and used fuel.
 
 \subsection{Results}
+
 \begin{table}[!htb]
 \centering
+\small
 \caption{A comparison of the output isotopics at equalibrium in the VISION fuel cycle simulator and the XSGen-Bright-lite system.}
 \label{tab:a}
-\begin{tabular}{c| c c c| c c c | c c c |}
+\vspace{0.5em}
+\hspace*{-5em}\begin{tabular}{|c| m{\mTW} m{\mTW} m{1cm}| m{\mTW} m{\mTW} m{1cm} | m{\mTW} m{\mTW} m{1cm} |}
  & \multicolumn{3}{c}{3.0\%} & \multicolumn{3}{c}{3.5\%} & \multicolumn{3}{c}{4.0\%} \\
-Isotope & VISION & XSGen-BL & Diff & VISION & XSGen-BL & Diff & VISION & XSGen-BL & Diff \\
+Isotope & VISION & XSGen & Diff & VISION & XSGen & Diff & VISION & XSGen & Diff \\
 \hline
-U235 & 6.75E-3 & 6.70E-03 & -0.78 & 6.80E-3 & 6.71E-3 & -1.30 & 6.95E-3 & 6.91E-3 & -0.562 \\
+U235 & 6.75E-3 & 6.70E-3 & -0.78 & 6.80E-3 & 6.71E-3 & -1.30 & 6.95E-3 & 6.91E-3 & -0.562 \\
 Pu238 & 1.23E-4 & 1.27E-4 & 3.01 & 1.85E-4 & 1.86E-4 & -0.41 & 2.52E-4 & 2.55E-4 & 1.35 \\
 Pu239 & 5.15E-3 & 5.25E-3 & 1.95 & 5.41E-3 & 5.45E-3 & 0.66 & 5.64E-3 & 5.67E-3 & 0.57 \\
-Pu240 & 2.38E-3 & 2.4E-3 & 0.97 & 2.60E-3 & 2.61E-3 & 0.25 & 2.78E-3 & 2.79E-3 & 0.4 \\
+Pu240 & 2.38E-3 & 2.40E-3 & 0.97 & 2.60E-3 & 2.61E-3 & 0.25 & 2.78E-3 & 2.79E-3 & 0.4 \\
 Pu241 & 1.30E-3 & 1.35E-3 & 3.69 & 1.48E-3 & 1.52E-3 & 2.74 & 1.62E-3 & 1.62E-3 & -0.02 \\
-Pu242 & 5.43E-4 & 5.48E-4 & 0.88 & 6.92E-4 & 6.93E-4 & 0.10 & 8.17E-4 & 8.19E-04 & -0.28 \\
+Pu242 & 5.43E-4 & 5.48E-4 & 0.88 & 6.92E-4 & 6.93E-4 & 0.10 & 8.17E-4 & 8.19E-4 & -0.28 \\
 Am241 & 3.56E-5 & 3.86E-5 & 8.81 & 4.59E-5 & 5.17E-5 & 12.60 & 5.55E-5 & 6.04E-5 & 8.79 \\
 Am243 & 9.38E-5 & 9.01E-5 & -3.94 & 1.37E-4 & 1.26E-4 & -7.47 & 1.76E-4 & 1.74E-4 & -1.40 \\
 Cm242 & 1.38E-5 & 1.34E-5 & -3.19 & 1.88E-5 & 1.79E-5 & -4.91 & 2.33E-5 & 2.31E-5 & -0.83 \\
@@ -210,7 +216,7 @@ Equal. & 42.32 & -0.43 & 0.81 & -0.44 & 0.79 & -4.54 & 1.11 & -9.42
 \end{tabular}
 \end{table}
 
-Table \ref{tab:d} and Table \ref{tab:e} are repeats of Table {tab:b} and Table \ref{tab:c} for the 3.6$\%$ enriched light water reactor. Again, you see a similar trend in these two with the exception that the equilibrium results for the total amount of plutonium within the reactor is 9.2$\%$ lower in the Bright-lite model. The amount of fissile plutonium is also lower, but within acceptable bounds. The lower amount of fissile plutonium leads to less transmutations into the high order actinides. 
+Table \ref{tab:d} and Table \ref{tab:e} are repeats of Table \ref{tab:b} and Table \ref{tab:c} for the 3.6$\%$ enriched light water reactor. Again, you see a similar trend in these two with the exception that the equilibrium results for the total amount of plutonium within the reactor is 9.2$\%$ lower in the Bright-lite model. The amount of fissile plutonium is also lower, but within acceptable bounds. The lower amount of fissile plutonium leads to less transmutations into the high order actinides. 
 
 \section{MOX Case}
 Simply replicating the behavior of a light water reactor would not show off the full capabilities of the XSGen software. To demonstrate the capability of the system to extend to more advanced reactor types, XSGen will be used to generate a MOX fuel library for Bright-lite. It will then be used to simulate a single pass MOX reactor. In order to compare this on an apples to apples basis, the input fuel into the Bright-lite reactor will be exactly the same as that for a similar VISION reactor. This test will be able to demonstrate the flexibility of the combined XSGen/Bright-lite system that allows it to model advanced reactor types. 
