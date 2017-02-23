@@ -3,6 +3,7 @@
 \usepackage{array}
 \usepackage{calc}
 \usepackage{setspace}
+\usepackage{amsmath}
 \usetikzlibrary{shapes.geometric, arrows}
 
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
@@ -83,19 +84,47 @@ For the current use case of XSGen this lower group structure is always a one gro
 
 $$\phi_g = PEM ∙(\phi)$$
 
-Here, \begin{math}\phi\end{math} represents the vector of group fluxes, and $\phi_g$ is the collapsed flux. With the one group flux it is possible to generate the one group cross sections. 
+Here, $\phi$ represents the vector of group fluxes, and $\phi_g$ is the collapsed flux. 
 
-$$\sigma_{i,g}^x=\frac{[PEM∙(\sigma_i^x*\phi*\omega)]}{\sigma_g} $$
+Additionally, group-wise cross sections for each isotope must be calculated. This is done using the raw pointwise cross section data through the following method. 
 
-Here $\sigma_{i,g}^x$ represents the one group cross section of specific type i, for isotope x. Once this has been completed for all the chosen isotopes and cross sections they are used to generate a TAPE9 cross section file for that time-step. 
+$$\sigma_{i,g}^x = \frac{\sum_{E_j=E_l}^{E_j=E_u}0.5*[\sigma(E_j)+\sigma(E_{j+1})]*[E_{j+1}-E_{j}]}{E_u-E_l}$$
+
+Here $E_l$ and $E_u$ represent the lower and upper bounds of the energy group, $E_j$ represents the energy of a pointwise cross section in the data set, $\sigma(E_j)$ represents the cross section at energy $E_j$, and $\sigma_{i,g}^x$ represents a group wise cross section for isotope x, and cross section i. 
+ 
+With the one group flux, and group-wise cross sections, it is possible to generate the one group, flux weighted, cross sections using the following equation. 
+
+$$\sigma_{i}^x=\frac{[PEM∙(\sigma_{i,g}^x*\phi)]}{\sigma_g}$$
+
+Here $\sigma_{i}^x$ represents the one group cross section of specific type i, for isotope x. This process is repeated for all isotopes and cross section, and those values are input into an Origin 2.2 TAPE9 file.  
 
 Pyne will also allow the user to incorperate the effects of self-shielding into XSgen. It does this build building an energy dependent function of weights of each isotope. These weights scale the one group cross section depending on the density of the isotope represented by this cross section. The more delute a isotope is within a material composition, the lower the effective cross section of the isotope. This done using the following equation.
 
-$$\omega_{y,n}=\frac{1}{\frac{(\sum_(X\neq Y)N^x * σ_(t,g)^x}{N^y}+\sigma_{t,g}^y}$$
+$$\omega_{y,n}=\frac{1}{\frac{\sum_{x\neq y}N^x * \sigma_{t,g}^x}{N^y}+\sigma_{t,g}^y}$$
 
-Here all isotopes in the fuel are included in the set of X, and Y is the isotope in question. $N_y$ represents the number density of isotope Y, and $\sigma_{t,n}$ represents the total cross section of an isotope in a specific energy bin, n. Therefore $\omega$ represents a two-dimensional matrix of X (number of isotopes) by G (number of groups). The number in each entry of the matrix is the cross section weight for a specific isotope, in a specific energy group. These weights must be recalculated every time-step as the number densities of the isotopes in the fuel will charge as burnup increases. 
+Here all isotopes in the fuel are included in the set of X, and Y is the isotope in question. $N_y$ represents the number density of isotope Y, and $\sigma_{t,n}^x$ represents a flux weighted total cross section of an isotope, x, in a specific energy bin, n.
 
-Note, that the cross sections used in this calculation must be provided by an outside source. PyNE is capable of reading in cross sections from several different cross section libraries including; ENDF, Cinder, EAF, and OpenMC. In this case the OpenMC cross sections were used.  
+Therefore similar to the mechanism described in the previous equation for calculated the one group flux weighted cross sections, these are multigroup flux weighted cross sections. Because this data is pointwise, a pointwise flux is also required. OpenMC will not output a point wise flux, so a fundamental pointwise flux is used as a supplement. The equation for this flux is as follows. 
+
+\large
+
+\[ \sigma = \begin{cases}
+      \frac{2*\pi*\sqrt{E*1e6}*e^{\frac{-E*1e6}{kT}}}{(\pi*kT)^1.5} & E\leq 0.155e-6 \\
+      \frac{1}{\sqrt{2E*1e6}} + 0.453e^{-1.036E}*\sinh{\sqrt{2.29E}} & E > 0.155e-6 \\
+   \end{cases}
+\]
+
+Where $k$ is the Boltzman constant, $T$ is the temperature, and E is the energy. This formulation of the flux can be shown visually in Figure \ref{fig:therm}. 
+\begin{figure}[h]
+  \center
+  \includegraphics[scale=0.8]{thermspec.png}
+  \caption{The effects of self-shielding on the cross sections for Uranium 235.}
+  \label{fig:therm}
+\end{figure}
+
+The end result of all of this is a two-dimensional matrix of X (number of isotopes) by G (number of groups). The number in each entry of the matrix is the cross section weight for a specific isotope, in a specific energy group. These weights must be recalculated every time-step as the number densities of the isotopes in the fuel will charge as burnup increases. 
+
+Note, that the pointwise cross sections used in these calculation must be provided by an outside source. PyNE is capable of reading in cross sections from several different cross section libraries including; ENDF, Cinder, EAF, and OpenMC. In this case the OpenMC cross sections were used.  
 
 The effects of self shielding on U235 inside of a fuel pellet can be seen in Figure \ref{fig:index}.
 \begin{figure}[h]
