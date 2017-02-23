@@ -82,7 +82,7 @@ PEM CALCULATION
 
 For the current use case of XSGen this lower group structure is always a one group, however it is not limited to that. The PEM is also able to map lower energy groups into higher energy group structures, but that is also not used by XSGen. The following equations shows the matrix mathematics for shifting a given group structure into a desired one using the PEM. 
 
-$$\phi_g = PEM ∙(\phi)$$
+$$\phi_g = PEM * \phi$$
 
 Here, $\phi$ represents the vector of group fluxes, and $\phi_g$ is the collapsed flux. 
 
@@ -275,6 +275,9 @@ CM244 & - & 1.03E-3 & 9.84E-4 & -4.4
 The data in Table \ref{tab:g} shows that the results of Bright-lite given the new XSGen MOX reactor cross section fairs quite well compared to VISION. There are some outliers in the behaviors, specifically the higher order species and U236. The issues with the higher order actinides, Am241 and higher, most likely stem from the high amount of Pu240. This suggest that Pu240 is not transmuting into Pu241 at a high enough rate, which therefore lowers the equalibrium concentration of Pu241 and all isotopes that derive from it. 
 
 One of the possible primary causes of this is uncertainity in the exact dimensions and behavior of the VISION MOX reactor. In order to get the most accurate results XSGen needs to know the specification of the MOX reactor. Instead for this work a generic 17x17 light water reactor core was chosen to use as a base for the XSGen run. If the input and output compositions generated for VISION were made from a reactor core of a different design it would result in slightly different cross sections and therefore different behavior. 
+
+\section{Conclusions}
+The future of nuclear energy is going to depend on how well the industry handles new innovations. Simulating fuel cycles will be crucial to determining the optimal strategies for acheiving the current and new goals using the new technology. This work demonstrates that XSgen is capable of providing a venue to generate data sets for reactor modules to simulate more advanced and less studied reactor designs and fuel types. While XSgen has only been tested using current reactor types, any reactor design that is can be simulated could fit inside of the XSgen methodology. 
 
 \end{document}
 
