@@ -84,6 +84,8 @@ producing multigroup cross sections. While Bright-lite is not yet capable of usi
 multigroup cross sections libraries as inputs, it is one importnat aim for future
 Bright-lite efforts.
 
+\TODO{Figure showing how Cyclus, Bright-lite and XSGen are related}
+
 XSGen is a new methodology aimed at developing high accuracy multigroup cross sections
 libraries for use in FCSs. Similar to the workflow of Monteburns, it couples a Monte Carlo
 neutron transport code (to compute energy dependent flux spectra) with a Bateman equation
@@ -146,22 +148,41 @@ in the figure.}
 \end{figure}
 
 \subsection{OpenMC}
-The software chosen to perform the Monte Carlo operations was OpenMC [OpenMC citation].  OpenMC was chosen due to its open source nature and ability to quickly perform the calculation required. The only information required from the results of the OpenMC run is the group fluxes. These are used later to calculation one group cross sections.
-
-Input templates for OpenMC can be added to the XSGen system as need reactor types become available for modeling.
+OpenMC \citeme was used and the reference neutron transport software for modeling reactors.
+OpenMC was chosen due to its availablity (it open source), ability to quickly perform
+reactor oriented calculations, and the ability to compute scatering kernels.
+Currently, XSGen only requires from the group fluxes from OpenMC.
+Input templates for OpenMC can be specified in the XSGen run control file. Standard templates
+may also be added to XSGen itself for use in future modeling.
 
 \subsection{PyNE}
-PyNE, or Python for Nuclear Engineering [PyNE citation], is the software used to perform the group collapse. The functionality to perform this group collapse was added to PyNE to facilitate the coupling of these two software. The collapse is performed using the following method.
+PyNE \citeme, a Nuclear Engineering toolkit library, is used to perform the group collapse
+from cross section databases down to the one group or multigroup cross sections.
+In the workflow here, PyNE is responsible for reading in cross section data from a wide
+vareity of sources. It is able to synthesize cross section data - that may exist with
+many different energy grids - down to a single energy group structure specified by the user.
 
-The first step is the creation of a partial energy matrix (PEM). This matrix maps a higher resolution group structures to lower resolution group structures. It does this by determining the contribution of each of the higher resolution energy groups into the lower resolution energy groups using a weighted sum. As this calculation can be computationally expensive it is only performed once per time step. It is important to note that the dimensions of the PEM are set, and only work the two group structures used to create it.
+The algorithm for collaspsing the cross sections, which PyNE performs in bulk, is as follows.
+First, a partial energy matrix (PEM) is created. This matrix maps a higher resolution group
+structures to lower resolution group structures. It does this by determining the contribution
+of each of the higher resolution energy groups into the lower resolution energy groups using
+a weighted sum. As this calculation can be computationally expensive it is only performed
+once per time step. \TODO{Clarify: It is important to note that the dimensions of the PEM are set, and only
+work the two group structures used to create it.}
 
-PEM CALCULATION
+Here, $\vec{\phi_h}$ represents the vector of group fluxes for $H$ energy groups with
+a group structured defined by $E_H$ bin boundaries. Likewise, $\vec{\phi_g}$ represents
+the collapsed flux with $G$ groups and $E_G$ bin boundaries. The partial energy
+matrix is then defined by the relations below,
 
-For the current use case of XSGen this lower group structure is always a one group, however it is not limited to that. The PEM is also able to map lower energy groups into higher energy group structures, but that is also not used by XSGen. The following equations shows the matrix mathematics for shifting a given group structure into a desired one using the PEM.
+\TODO{PEM CALCULATION}
 
-$$\phi_g = PEM * \phi$$
+For the current use case of Bright-lite, this lower group structure is always a one group.
+However, XSGen mayu generate any energy group structure desired.
+Thus shifting a given group structure into a desired one using the PEM is simply a matter
+of taking the dot product of the PEM by the original group structure.
 
-Here, $\phi$ represents the vector of group fluxes, and $\phi_g$ is the collapsed flux.
+\[ \vec{\phi_g} = P \cdot \vec{\phi_h} \]
 
 Additionally, group-wise cross sections for each isotope must be calculated. This is done using the raw pointwise cross section data through the following method.
 
