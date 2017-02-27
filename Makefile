@@ -2,19 +2,19 @@ manuscript = XSGen
 references = refs
 latexopt   = -halt-on-error -file-line-error
 
-all: all-via-dvi
+all: all-via-pdf
 
-all-via-pdf: $(manuscript).tex $(references).bib
+all-via-pdf: $(manuscript).tex #$(references).bib
 	pdflatex $(latexopt) $(manuscript)
-	bibtex $(manuscript $<).aux
-	pdflatex $(latexopt) $(manuscript)
-	pdflatex $(latexopt) $(manuscript)
+	#bibtex $(manuscript $<).aux
+	#pdflatex $(latexopt) $(manuscript)
+	#pdflatex $(latexopt) $(manuscript)
 
 all-via-dvi:
 	latex $(latexopt) $(manuscript)
-	bibtex $(manuscript).aux
-	latex $(latexopt) $(manuscript)
-	latex $(latexopt) $(manuscript)
+	#bibtex $(manuscript).aux
+	#latex $(latexopt) $(manuscript)
+	#latex $(latexopt) $(manuscript)
 	dvipdf $(manuscript)
 
 diff:
