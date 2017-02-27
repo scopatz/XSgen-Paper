@@ -71,9 +71,33 @@ Unfortunately, the burn card in MCNP does not provide all of the cross sections 
 reactions that Bright-lite is interested in computing for fuel cycle purposes.
 \TODO{Such as...}
 
-Monteburns functions very similar to the burn card currently in MCNP. It extracts cross sections from MCNP and uses those to create one group cross sections for a bateman equation solver, it then simulates burning the fuel. This is the ideal path for producing Bright-lite data, however, Monteburns is lacking in some very important charactistics. First, Monteburns is limited to the reactor types that are included with the software. This is problematic because Bright-lite aims to simulate newer and more advanced reactor types. Therefore, any software for linking into Bright-lite must be flexible in terms of reactor design. Second, Monteburns is not capable of producing multigroup cross sections. While Bright-lite is not capable of yet using multigroup cross sections, that is one goal of the software moving forward.
+Alternately, Monteburns transmutes and evolves material compositions over time.
+It extracts flux and cross section data from MCNP and collapses these to create one group
+cross sections for a Bateman equation solver.
+While this is the prefered path for producing Bright-lite libraries, Monteburns also lacks
+certain necessary charactistics. First, Monteburns is limited to stock reactor types
+with which it is distributed. This is problematic because Bright-lite aims to simulate
+new and advanced reactor designs. Therefore, any one group cross section generator
+for creating Bright-lite libraries
+must be flexible in terms of reactor design. Second, Monteburns is not capable of
+producing multigroup cross sections. While Bright-lite is not yet capable of using
+multigroup cross sections libraries as inputs, it is one importnat aim for future
+Bright-lite efforts.
 
-XSGen is a new methodology aimed at developing higher accuracy cross sections. Similar to the work flow of Monteburns, it couples a Monte Carlo software with a Bateman Equation solver.  By coupling the two software it is possible to generate fluence dependent values for neutron production, destruction, and transmutation matrices for each isotope as the flux spectrum within a reactor evolves. It provides the capability to investigate any cross section that exists in ENDF, EAF, and ACE cross section databases, to collapse them into single or multigroup cross sections, and to provide the data required by Bright-lite directly.
+XSGen is a new methodology aimed at developing high accuracy multigroup cross sections
+libraries for use in FCSs. Similar to the workflow of Monteburns, it couples a Monte Carlo
+neutron transport code (to compute energy dependent flux spectra) with a Bateman equation
+solver (to evolve nuclide compositions as a function of residence time in the core).
+From here, XSGen generates fluence dependent values for neutron production, destruction,
+and transmutation matrices for each nuclide.
+It provides the capability to include and investigate any nuclide for which
+continuous energy or multigroup cross sections that exists.
+ENDF VII.1 \citeme, NNDC \citeme, and EAF \citeme cross section databases have all be
+examined in the course of this work. However, any ENDF or ACE data is able to be
+used, either independently or jointly. XSGen, with a multigroup flux obtained from a
+transport code, collapses these databases into single or multigroup cross sections.
+Finally, it outputs both the cross sections and transmutation matricies in a library
+format readable by Bright-lite directly.
 
 \section{XSGen Work Flow}
 The XSGen work flow is composed of 3 main parts as mentioned above. The first step is the simulation of the reactor core using a Monte Carlo simulation. The results of this are then taken in by a wrapping software and converted into one group cross sections for a specific reactor. These cross sections are then used inside of the Bateman Equation software to calculation the burnup, neutron production, neutron destruction, and transmutation matrixes. This values are calculated at a user defined time length. The composition of the material at the end of the time step is then returned to the Monte Carlo simulator and the process is repeated. This flow is descriped in Figure \ref{fig:flow}
