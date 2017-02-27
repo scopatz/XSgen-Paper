@@ -99,8 +99,20 @@ transport code, collapses these databases into single or multigroup cross sectio
 Finally, it outputs both the cross sections and transmutation matricies in a library
 format readable by Bright-lite directly.
 
-\section{XSGen Work Flow}
-The XSGen work flow is composed of 3 main parts as mentioned above. The first step is the simulation of the reactor core using a Monte Carlo simulation. The results of this are then taken in by a wrapping software and converted into one group cross sections for a specific reactor. These cross sections are then used inside of the Bateman Equation software to calculation the burnup, neutron production, neutron destruction, and transmutation matrixes. This values are calculated at a user defined time length. The composition of the material at the end of the time step is then returned to the Monte Carlo simulator and the process is repeated. This flow is descriped in Figure \ref{fig:flow}
+\section{XSGen Workflow}
+The XSGen workflow is composed of three main parts as mentioned above \TODO{list again since in
+a new section}. The first step is the simulation of the reactor core using a
+Monte Carlo neutron transport simulation. The main result of this is the flux spectrum.
+The spectrum is then collapsed with a a cross section database and converted into
+a suite of one group cross sections for a reactor at a given time $t$ \TODO{units}
+after the reactor has started up. These one group cross sections are then used inside of
+a Bateman equation solve to calculate the burnup, neutron production, neutron destruction,
+and transmutation matrices. The value of $t$ is set by the user when XSGen is executed.
+The composition of the material at the end of the time step is then submitted back to
+the Monte Carlo simulator as inpu. This process is repeated until the maximum time
+step specified is reached. This flow is displayed in Figure \ref{fig:flow}.
+\TODO{We need to mention OpenMC, PyNE, and Origen by this point since they are used
+in the figure.}
 
 \begin{figure}\center\begin{tikzpicture}[node distance=2cm]
 \node (start) [startstop] {Start};
