@@ -26,80 +26,7 @@
 \doublespacing
 
 \section{Introduction}
-As new nuclear reactor technologies are developed and deployed,
-the impacts of these technologies must be fully characterized. One possible
-avenue for accomplishing this is by using fuel cycle simulators (FCS) capable of
-modeling reactior physics in addition to resource exchange behavior.
-Several FCSs exist, but most are not capable of modeling the internal reactor physics
-beyond input/output inventory lookup.
-COSI \citeme, CLASS \citeme, and certain modules within Cyclus \citeme
-ecosystem do allow for higher fidelity reactor physics calcultaions.
 
-Being able to model reactors accurately inside of an FCS is important for moving
-nuclear fuel cycle design forward. A fuel cycle is fundementally defined by the
-qunatity and the quality (composition) of materials that move through it.
-This primarily comes from the reliance of down stream facilities on the materials
-that are made available to them by upstream facilties.
-For example, the behavior and cost of a reprocessing facility depends on the
-material that is provided to it by reactors. This behavior is unique to the nuclear fuel
-cycle with respect to other forms of power generation. The
-composition of used fuel output by a reactor can very greatly based on the
-time-integrated neutron flux spectrum and the geometry of the particular reactor
-in which the fuel was emplaced. Developing reactor models with increased fidelity
-may lead to a better understanding of the quantity and quality of material within
-a nuclear fuel cycle.
-
-Bright-lite \citeme is a medium fidelity reactor model for Cyclus. It uses a fluence
-based approached to calculate appropriate discharge fluence, input nuclide vectors,
-and output nuclide vectors for a reactor. In order to compute these parameters, it
-uses criticality, burnup, and transmutation matrices for each nuclide of the input
-fuel. This set of data forms an input library that is dependent on the reactor type.
-For example, light-water reactors (LWR) will have a characteristic library distinct from
-fast reactors (FR). This information is generated using one group cross sections and
-a Bateman equation solver. The reliance on one group cross sections means that the
-fidelity of the calculations is only as good as the data, and method, used to construct
-the one group cross sections. Therefore, improvements to the data or the physics models used to
-generate these one group cross sections will improve the accuracy of the results
-computed by Bright-lite.
-
-There are several existing techniques for generating Bright-lite reactor libraries.
-MCNP \citeme coupled with Monteburns \citeme are together potyentially capable of
-producing Bright-lite inputs. However, these were found to not be sufficient solutions
-for the FCS case at hand. Even though MCNP is nominally a time-independent neutron transport
-code, relatively recent versions do have fuel burning functionality (the burn card).
-Unfortunately, the burn card in MCNP does not provide all of the cross sections and
-reactions that Bright-lite is interested in computing for fuel cycle purposes.
-\TODO{Such as...}
-
-Alternately, Monteburns transmutes and evolves material compositions over time.
-It extracts flux and cross section data from MCNP and collapses these to create one group
-cross sections for a Bateman equation solver.
-While this is the prefered path for producing Bright-lite libraries, Monteburns also lacks
-certain necessary charactistics. First, Monteburns is limited to stock reactor types
-with which it is distributed. This is problematic because Bright-lite aims to simulate
-new and advanced reactor designs. Therefore, any one group cross section generator
-for creating Bright-lite libraries
-must be flexible in terms of reactor design. Second, Monteburns is not capable of
-producing multigroup cross sections. While Bright-lite is not yet capable of using
-multigroup cross sections libraries as inputs, it is one importnat aim for future
-Bright-lite efforts.
-
-\TODO{Figure showing how Cyclus, Bright-lite and XSGen are related}
-
-XSGen is a new methodology aimed at developing high accuracy multigroup cross sections
-libraries for use in FCSs. Similar to the workflow of Monteburns, it couples a Monte Carlo
-neutron transport code (to compute energy dependent flux spectra) with a Bateman equation
-solver (to evolve nuclide compositions as a function of residence time in the core).
-From here, XSGen generates fluence dependent values for neutron production, destruction,
-and transmutation matrices for each nuclide.
-It provides the capability to include and investigate any nuclide for which
-continuous energy or multigroup cross sections that exists.
-ENDF VII.1 \citeme, NNDC \citeme, and EAF \citeme cross section databases have all be
-examined in the course of this work. However, any ENDF or ACE data is able to be
-used, either independently or jointly. XSGen, with a multigroup flux obtained from a
-transport code, collapses these databases into single or multigroup cross sections.
-Finally, it outputs both the cross sections and transmutation matricies in a library
-format readable by Bright-lite directly.
 
 \section{XSGen Workflow}
 The XSGen workflow is composed of three main parts as mentioned above \TODO{list again since in
@@ -136,7 +63,6 @@ in the figure.}
 \draw [arrow] (pynexs) -- (pyne);
 \draw [arrow] (pyne) -- (origen22);
 \draw [arrow] (origen22) -- (timecheck);
-\draw [arrow] (origen22) -- (compupdate);
 \draw [arrow] (compupdate) -- (omcupdate);
 \draw [arrow] (timeinc) -- (compupdate);
 \draw [arrow] (timecheck) -- node[anchor=south]{No}(timeinc);
@@ -206,7 +132,7 @@ Therefore similar to the mechanism described in the previous equation for calcul
 
 \large
 
-\[ \sigma = \begin{cases}
+\[ \phi = \begin{cases}
       \frac{2*\pi*\sqrt{E*1e6}*e^{\frac{-E*1e6}{kT}}}{(\pi*kT)^1.5} & E\leq 0.155e-6 \\
       \frac{1}{\sqrt{2E*1e6}} + 0.453e^{-1.036E}*\sinh{\sqrt{2.29E}} & E > 0.155e-6 \\
    \end{cases}
@@ -228,7 +154,7 @@ The effects of self shielding on U235 inside of a fuel pellet can be seen in Fig
 \begin{figure}[h]
   \center
   \includegraphics[scale=0.8]{index.png}
-  \caption{The effects of self-shielding on the cross sections for Uranium 235.}
+  \caption{The effects of self-shielding on the fission cross section of Uranium 235 inside a fuel pellet.}
   \label{fig:index}
 \end{figure}
 
@@ -236,6 +162,8 @@ The effects of self shielding on U235 inside of a fuel pellet can be seen in Fig
 Once the TAPE9 has been constructed it is used to perform two types of burnup operations. The first burnup is performed on the fuel. This includes the full list of isotopes currently in the fuel. Once this burnup is performed the isotopic vector at the end of the fuel burn is passed back to OpenMC to start the operation all over again.
 
 The second type of burnup calculation is used to build a dataset for a specific isotope. These burnup runs take one kilogram of a pure isotope as the input fuel. At the end of the run, the burnup, neutron production/destruction, and transmutation matrix are all recorded. The isotopes of interest are chosen ahead of time by the user of the software, typically these are the isotopes that the user wishes to use as the input fuel for the reactor type/design that they are investigating.
+
+\section{
 
 \section{Benchmarking}
 \subsection{LWR Test Cases}
