@@ -26,7 +26,7 @@
 \onehalfspacing
 
 \section{Introduction}
-
+Simulation is an essential part of nuclear engineering. In regards to reactor model simulation, there are three main divisions of simulation type; low, medium, and high fidelity. Low fidelity models are those models that include no physics at run time. An example of low fidelity modelling are recipe reactors techniques. Medium fidelity models are those that include physics. Examples of these medium fidelity models are Class\citeme, and Bright-lite\citeme. High fidelity models are performed using neutronics calculations and bateman equation solvers. An example of a high fidelity reactor model is the MCNP\citeme burn card.   
 
 \section{XSGen Workflow}
 The XSGen workflow is composed of three main parts as mentioned above \TODO{list again since in
@@ -38,10 +38,8 @@ after the reactor has started up. These one group cross sections are then used i
 a Bateman equation solve to calculate the burnup, neutron production, neutron destruction,
 and transmutation matrices. The value of $t$ is set by the user when XSGen is executed.
 The composition of the material at the end of the time step is then submitted back to
-the Monte Carlo simulator as inpu. This process is repeated until the maximum time
-step specified is reached. This flow is displayed in Figure \ref{fig:flow}.
-\TODO{We need to mention OpenMC, PyNE, and Origen by this point since they are used
-in the figure.}
+the Monte Carlo simulator as input. This process is repeated until the maximum time
+step specified is reached. For this work, the pieces of code that are used to provide the necessary functionality are OpenMC\citeme, Pyne\citeme, and Origen2.2\citeme. This flow is displayed in Figure \ref{fig:flow}.
 
 \begin{figure}\center\begin{tikzpicture}[node distance=2cm]
 \node (start) [startstop] {Start};
