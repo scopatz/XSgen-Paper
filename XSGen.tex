@@ -14,7 +14,7 @@
 \tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30, text width = 2cm]
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
-\newcommand\mTW{1.25cm}
+\newcommand\mTW{1.5cm}
 \newcommand{\citeme}{\textcolor{red}{[CITATION NEEDED]}\xspace}
 \newcommand{\TODO}[1] {{\color{red}\textbf{TODO: #1}}}
 
@@ -185,23 +185,47 @@ The two cases being used to test XSGen in startup behavior will be a 3.1$\%$ enr
 \begin{table}[!htb]
 \centering
 \small
-\caption{A comparison of the output isotopics at equalibrium in the VISION fuel cycle simulator and the XSGen-Bright-lite system.}
+\caption{The output isotopics at equalibrium for the VISION fuel cycle simulator}
 \label{tab:a}
 \vspace{0.5em}
-\hspace*{-5em}\begin{tabular}{|c| m{\mTW} m{\mTW} m{1cm}| m{\mTW} m{\mTW} m{1cm} | m{\mTW} m{\mTW} m{1cm} |}
- & \multicolumn{3}{c}{3.0\%} & \multicolumn{3}{c}{3.5\%} & \multicolumn{3}{c}{4.0\%} \\
-Isotope & VISION & XSGen & Diff & VISION & XSGen & Diff & VISION & XSGen & Diff \\
+\begin{tabular}{cccc}
+ & \multicolumn{1}{c}{3.0\%} & \multicolumn{1}{c}{3.5\%} & \multicolumn{1}{c}{4.0\%} \\
+Isotope & Mass Fraction & Mass Fraction & Mass Fraction \\
 \hline
-U235 & 6.75E-3 & 6.70E-3 & -0.78 & 6.80E-3 & 6.71E-3 & -1.30 & 6.95E-3 & 6.91E-3 & -0.562 \\
-Pu238 & 1.23E-4 & 1.27E-4 & 3.01 & 1.85E-4 & 1.86E-4 & -0.41 & 2.52E-4 & 2.55E-4 & 1.35 \\
-Pu239 & 5.15E-3 & 5.25E-3 & 1.95 & 5.41E-3 & 5.45E-3 & 0.66 & 5.64E-3 & 5.67E-3 & 0.57 \\
-Pu240 & 2.38E-3 & 2.40E-3 & 0.97 & 2.60E-3 & 2.61E-3 & 0.25 & 2.78E-3 & 2.79E-3 & 0.4 \\
-Pu241 & 1.30E-3 & 1.35E-3 & 3.69 & 1.48E-3 & 1.52E-3 & 2.74 & 1.62E-3 & 1.62E-3 & -0.02 \\
-Pu242 & 5.43E-4 & 5.48E-4 & 0.88 & 6.92E-4 & 6.93E-4 & 0.10 & 8.17E-4 & 8.19E-4 & -0.28 \\
-Am241 & 3.56E-5 & 3.86E-5 & 8.81 & 4.59E-5 & 5.17E-5 & 12.60 & 5.55E-5 & 6.04E-5 & 8.79 \\
-Am243 & 9.38E-5 & 9.01E-5 & -3.94 & 1.37E-4 & 1.26E-4 & -7.47 & 1.76E-4 & 1.74E-4 & -1.40 \\
-Cm242 & 1.38E-5 & 1.34E-5 & -3.19 & 1.88E-5 & 1.79E-5 & -4.91 & 2.33E-5 & 2.31E-5 & -0.83 \\
-Cm244 & 2.79E-5 & 2.57E-5 & -7.94 & 4.38E-5 & 4.54E-5 & -6.06 & 7.06E-5 & 7.00E-5 & -0.90 \\
+U235  & 6.75E-3 & 6.80E-3 & 6.95E-3 \\
+Pu238 & 1.23E-4 & 1.85E-4 & 2.52E-4 \\
+Pu239 & 5.15E-3 & 5.41E-3 & 5.64E-3 \\
+Pu240 & 2.38E-3 & 2.60E-3 & 2.78E-3 \\
+Pu241 & 1.30E-3 & 1.48E-3 & 1.62E-3 \\
+Pu242 & 5.43E-4 & 6.92E-4 & 8.17E-4 \\
+Am241 & 3.56E-5 & 4.59E-5 & 5.55E-5 \\
+Am243 & 9.38E-5 & 1.37E-4 & 1.76E-4 \\
+Cm242 & 1.38E-5 & 1.88E-5 & 2.33E-5 \\
+Cm244 & 2.79E-5 & 4.38E-5 & 7.06E-5 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htb]
+\centering
+\small
+\caption{A comparison of the output isotopics at equalibrium in the VISION fuel cycle simulator and the XSGen-Bright-lite system. Comparison is done as a percent difference.}
+\label{tab:xsgenresults}
+\vspace{0.5em}
+\begin{tabular}{c cc  cc  cc }
+ & \multicolumn{2}{c}{3.0\%} & \multicolumn{2}{c}{3.5\%} & \multicolumn{2}{c}{4.0\%} \\
+Isotope & Bright-lite & Difference & Bright-lite & Difference & Bright-lite & Difference  \\
+\hline
+U235 & 6.70E-3 & -0.78 & 6.71E-3 & -1.30 & 6.91E-3 & -0.562 \\
+Pu238 & 1.27E-4 & 3.01 & 1.86E-4 & -0.41 & 2.55E-4 & 1.35 \\
+Pu239 & 5.25E-3 & 1.95 & 5.45E-3 & 0.66 & 5.67E-3 & 0.57 \\
+Pu240 & 2.40E-3 & 0.97 & 2.61E-3 & 0.25 & 2.79E-3 & 0.4 \\
+Pu241 & 1.35E-3 & 3.69 & 1.52E-3 & 2.74 & 1.62E-3 & -0.02 \\
+Pu242 & 5.48E-4 & 0.88 & 6.93E-4 & 0.10 & 8.19E-4 & -0.28 \\
+Am241 & 3.86E-5 & 8.81 & 5.17E-5 & 12.60 & 6.04E-5 & 8.79 \\
+Am243 & 9.01E-5 & -3.94 & 1.26E-4 & -7.47 & 1.74E-4 & -1.40 \\
+Cm242 & 1.34E-5 & -3.19 & 1.79E-5 & -4.91 & 2.31E-5 & -0.83 \\
+Cm244 & 2.57E-5 & -7.94 & 4.54E-5 & -6.06 & 7.00E-5 & -0.90 \\
 \hline
 \end{tabular}
 \end{table}
@@ -214,7 +238,7 @@ Am241 shows the largest deviations from the VISION data. There is more Am241 in 
 \centering
 \caption{NEA core discharge data for a 3.1\% enriched light water reactor with startup behavior.}
 \label{tab:b}
-\begin{tabular}{lllll}
+\begin{tabular}{lrrrr}
 Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
 1 & 12.04 & 0.64 & 0.464 & 0.633 \\
 2 & 23.86 & 0.76 & 0.6 & 0.818 \\
@@ -228,8 +252,8 @@ Equil. & 33.00 & 0.85 & 0.688 & 0.943
 \centering
 \caption{The startup values and percent difference from the NEA data for the XSGen/Bright-lite reactor system.}
 \label{tab:c}
-\begin{tabular}{lllllllll}
- & \multicolumn{2}{l}{Burnup (MWd/kgIHM)} & \multicolumn{2}{l}{U235 (\%)} & \multicolumn{2}{l}{Fissile Pu (\%)} & \multicolumn{2}{l}{Total Pu (\%)} \\
+\begin{tabular}{lrrrrrrrr}
+ & \multicolumn{2}{p{1cm}}{Burnup (MWd/kgIHM)} & \multicolumn{2}{c}{U235 (\%)} & \multicolumn{2}{c}{Fissile Pu (\%)} & \multicolumn{2}{c}{Total Pu (\%)} \\
 Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
 1 & 13.570 & 12.754 & 0.656 & 2.50 & 0.550 & 18.737 & 0.680 & 7.541 \\
 2 & 22.040 & -7.628 & 0.723 & -4.868 & 0.641 & 6.919 & 0.835 & 2.189 \\
