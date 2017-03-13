@@ -40,20 +40,17 @@ At present medium fidelity models use different methods for generating their dat
 
 This work discusses a methodology, know as XSGen, that aims to provide a basis for generation of datasets that all of these software could use to create a canonical sets of data for multiple medium fidelity models to use moving forward. 
 
-XSGen links several peices of software together to automate the generation of medium fidelity model datasets. 
+XSGen links several peices of software together to automate the generation of medium fidelity model datasets. The first piece of software is a high fidelity neutronics code. XSGen uses OpenMC as the software to perform this step. Flux is extracted from OpenMC\citeme. This is used by a cross section calculation software to generate one-group or multi-group cross-sections. This operation is performed by PyNE\citeme Python for Nuclear Engineers. Finally using the one-group or multi-group cross-sections a burnup solver is employed. Currently this role is completed by Origen2.2\citeme, and therefore one-group cross-sections are required.  
+
+This set of software is capable of providing inputs that medium fidelity models could use; time dependent one group cross-sections, time dependent multi-group cross-sections, transmutation matricies, burnup rates, etc. XSGen stores the outputs of each of these software into a single large database, from there medium fidelity models can extract the information they need to derive a new dataset for use. 
 
 \section{XSGen Workflow}
-The XSGen workflow is composed of three main parts as mentioned above \TODO{list again since in
-a new section}. The first step is the simulation of the reactor core using a
-Monte Carlo neutron transport simulation. The main result of this is the flux spectrum.
-The spectrum is then collapsed with a a cross section database and converted into
-a suite of one group cross sections for a reactor at a given time $t$ \TODO{units}
-after the reactor has started up. These one group cross sections are then used inside of
+The XSGen workflow is composed of three main parts as mentioned above; OpenMC, PyNE, Origen2.2. The first step is the simulation of the reactor core using a Monte Carlo neutron transport simulation. The main result of this is the flux spectrum. The spectrum is then collapsed with a a cross section database and converted into a suite of one group cross sections for a reactor at a given time $t$ days after the reactor has started up. These one group cross sections are then used inside of
 a Bateman equation solve to calculate the burnup, neutron production, neutron destruction,
 and transmutation matrices. The value of $t$ is set by the user when XSGen is executed.
 The composition of the material at the end of the time step is then submitted back to
 the Monte Carlo simulator as input. This process is repeated until the maximum time
-step specified is reached. For this work, the pieces of code that are used to provide the necessary functionality are OpenMC\citeme, Pyne\citeme, and Origen2.2\citeme. This flow is displayed in Figure \ref{fig:flow}.
+step specified is reached. For this work, the pieces of code that are used to provide the necessary functionality are OpenMC, Pyne, and Origen2.2. This flow is displayed in Figure \ref{fig:flow}.
 
 \begin{figure}\center\begin{tikzpicture}[node distance=2cm]
 \node (start) [startstop] {Start};
@@ -86,15 +83,14 @@ step specified is reached. For this work, the pieces of code that are used to pr
 \end{figure}
 
 \subsection{OpenMC}
-OpenMC \citeme was used and the reference neutron transport software for modeling reactors.
-OpenMC was chosen due to its availablity (it open source), ability to quickly perform
-reactor oriented calculations, and the ability to compute scatering kernels.
-Currently, XSGen only requires from the group fluxes from OpenMC.
-Input templates for OpenMC can be specified in the XSGen run control file. Standard templates
-may also be added to XSGen itself for use in future modeling.
+OpenMC was used as the reference neutron transport software for modeling reactors.The software was chosen due to its availablity (it is open source), ability to quickly perform
+reactor oriented calculations, and the ability to compute scattering kernels.
+Currently, XSGen only requires the group flux values from OpenMC, and it extracts these each timestep. Input templates for OpenMC can be specified in the XSGen run control file. 
+
+Standard templates may also be added to XSGen itself for use in future modeling. New templates can be added to the XSGen library of reactor types by creating a new input file for OpenMC that simulates the choice reactor type.
 
 \subsection{PyNE}
-PyNE \citeme, a Nuclear Engineering toolkit library, is used to perform the group collapse
+PyNE, a Nuclear Engineering toolkit library, is used to perform the group collapse
 from cross section databases down to the one group or multigroup cross sections.
 In the workflow here, PyNE is responsible for reading in cross section data from a wide
 vareity of sources. It is able to synthesize cross section data - that may exist with
@@ -104,14 +100,12 @@ The algorithm for collaspsing the cross sections, which PyNE performs in bulk, i
 First, a partial energy matrix (PEM) is created. This matrix maps a higher resolution group
 structures to lower resolution group structures. It does this by determining the contribution
 of each of the higher resolution energy groups into the lower resolution energy groups using
-a weighted sum. As this calculation can be computationally expensive it is only performed
-once per time step. \TODO{Clarify: It is important to note that the dimensions of the PEM are set, and only
-work the two group structures used to create it.}
+a weighted sum. A PEM is only applicable for the transformation it is originally designed for. A PEM that transforms a 10 group system into a 1 group system can not be used to transform a 20 group system into a 1 group system. The calculations required to generate a PEM can be computationally expensive and therefore are only calculated if a new group structure is added to the system.  
 
 Here, $\vec{\phi_h}$ represents the vector of group fluxes for $H$ energy groups with
 a group structured defined by $E_H$ bin boundaries. Likewise, $\vec{\phi_g}$ represents
 the collapsed flux with $G$ groups and $E_G$ bin boundaries. The partial energy
-matrix is then defined by the relations below,
+matrix is then defined by the relations below.
 
 \TODO{PEM CALCULATION}
 
