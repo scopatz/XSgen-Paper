@@ -26,7 +26,21 @@
 \onehalfspacing
 
 \section{Introduction}
-Simulation is an essential part of nuclear engineering. In regards to reactor model simulation, there are three main divisions of simulation type; low, medium, and high fidelity. Low fidelity models are those models that include no physics at run time. An example of low fidelity modelling are recipe reactors techniques. Medium fidelity models are those that include physics. Examples of these medium fidelity models are Class\citeme, and Bright-lite\citeme. High fidelity models are performed using neutronics calculations and bateman equation solvers. An example of a high fidelity reactor model is the MCNP\citeme burn card.   
+Simulation is an essential part of nuclear engineering. In regards to reactor simulation, there are three main divisions of model type; low, medium, and high fidelity. Each of these models provides different benefits to a simulation but comes with costs to either accuracy or computational time.  
+
+Low fidelity models are those models that include no physics at run time. These types of models work for systems that have a set pattern of behavior. For example, recipe reactors only require input and output recipes. This means that they can simulate a reactor with a single computational opperation.  An example of low fidelity modelling are recipe reactors techniques. 
+
+High fidelity models are performed using neutronics calculations and bateman equation solvers. These models tend to require a great amount of detail to set up, and a heavy amount of computation to complete. An example of a high fidelity reactor model is the MCNP\citeme burn card.  
+
+Medium fidelity models are those that include physics calculations during their operation. These models typically work off datasets that are built ahead of time with higher fidelity models. The physics they incorperate uses the information in these types, or outside sources to modify the data in the datasets. Examples of these medium fidelity models are Class\citeme, and Bright-lite\citeme. 
+
+These medium fidelity models can incorperate a number of different techniques to perform their tasks. Bright-lite, for example, uses a fluence based neutron balance approach to determine the behavior of the reactor. Class, however, uses a set of reactor input and output recipes and machine learning to determing reactor behavior. To understand how these different modeling choices impact a fuel cycle, or the isotopic behavior of a reactor type, it is important for the models to all start from the same base information. 
+
+At present medium fidelity models use different methods for generating their datasets. This means that any comparison between their methods would be invalid because they all start from different places. Any difference in their final results could be derived from either their data generation step or their methodology. Therefore only a comparison that uses the same baseline data generation across multiple software is useful for determining any differences in their behavior. 
+
+This work discusses a methodology, know as XSGen, that aims to provide a basis for generation of datasets that all of these software could use to create a canonical sets of data for multiple medium fidelity models to use moving forward. 
+
+XSGen links several peices of software together to automate the generation of medium fidelity model datasets. 
 
 \section{XSGen Workflow}
 The XSGen workflow is composed of three main parts as mentioned above \TODO{list again since in
@@ -234,7 +248,7 @@ Equal. & 33.020 & 0.060 & 0.855 & 0.588 & 0.700 & 1.833 & 0.951 & 0.820
 
 Table \ref{tab:b} shows how XSGen/Bright-lite compares to the NEA results. The equilibrium results here show good agreement with this case. As Bright-lite is often used to derive output isotopics from used fuels to be passed onto recycle scenarios, accurately predicting the equilibrium output isotopics is important.
 
-The results of the start up isotopics can be seen in Table \ref{tab:c}. There are some discrepencies in these results. First, the amount of plutonium generated within the first batch is significantly higher within Bright-lite compared to the NEA data. This trend only continues for the first two cycles. Due to the way Bright-lite operates, this is caused by the lower enriched batches within the startup core that do not have neutron poisons from fission products or other actinides. This means that there is a higher effective flux striking a high amount of U238 causing more generation of Pu239. The NEA benchmark has these low enrichment startup batches spread more evenly, Bright-lite has them all inside the inner most part of the circle.
+The results of the start up isotopics can be seen in Table \ref{tab:c}. There are some discrepencies in these results. First, the amount of plutonium generated within the first batch is significantly higher within Bright-lite compared to the NEA data. This trend only continues for the first two cycles. Due to the way Bright-lite operates, this is caused by the lower enriched batches within the startup core that do not have neutron poisons from fission products or other actinides. This means that there is a higher effective flux striking a high amount of U238 causing more generation of Pu239. The NEA benchmark has these low enrichment startup batches spread more evenly, Bright-lite simulates them as being the innermost section of the core. 
 
 \begin{table}[!htb]
 \centering
@@ -301,7 +315,7 @@ The data in Table \ref{tab:g} shows that the results of Bright-lite given the ne
 One of the possible primary causes of this is uncertainity in the exact dimensions and behavior of the VISION MOX reactor. In order to get the most accurate results XSGen needs to know the specification of the MOX reactor. Instead for this work a generic 17x17 light water reactor core was chosen to use as a base for the XSGen run. If the input and output compositions generated for VISION were made from a reactor core of a different design it would result in slightly different cross sections and therefore different behavior.
 
 \section{Conclusion}
-
+Through this work it has been demonstrated that XSGen is 
 
 \end{document}
 
