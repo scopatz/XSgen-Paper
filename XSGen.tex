@@ -28,9 +28,9 @@
 \onehalfspacing
 
 \section{Introduction}
-Simulation is an essential part of nuclear engineering. In regards to reactor simulation, there are three main divisions of model type; low, medium, and high fidelity. Each of these models provides different benefits to a simulation but comes with costs to either accuracy or computational time.  
+Reactor simulation is an essential part of nuclear engineering. There are three main divisions of reactor modeling strageties; low, medium, and high fidelity. Each of these models provides different benefits to a simulation but comes with costs to either accuracy or computational time.  
 
-Low fidelity models are those models that include no physics at run time. These types of models work for systems that have a set pattern of behavior. For example, recipe reactors only require input and output recipes. This means that they can simulate a reactor with a single computational opperation.  An example of low fidelity modelling are recipe reactors techniques. 
+Low fidelity models are those models that include no physics at run time. These types of models work for systems that have a set pattern of behavior. For example, recipe reactors use only input and output recipes. This means that they can simulate a reactor with a single computational opperation.  Some low fidelity models include interpolations techniques to build libraries on the fly. For example, interpolating between recipes for 3\% enriched fuel, and 4\% enriched fuel might be used to get a 3.5\% enriched fuel recipe. s
 
 High fidelity models are performed using neutronics calculations and bateman equation solvers. These models tend to require a great amount of detail to set up, and a heavy amount of computation to complete. An example of a high fidelity reactor model is the MCNP\citeme burn card.  
 
