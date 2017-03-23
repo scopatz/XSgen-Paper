@@ -17,7 +17,6 @@
 \pgfplotsset{width=10cm,compat=1.9}
 
 \newcommand\mTW{1.5cm}
-\newcommand{\citeme}{\textcolor{red}{[CITATION NEEDED]}\xspace}
 \newcommand{\TODO}[1] {{\color{red}\textbf{TODO: #1}}}
 
 \begin{document}
@@ -32,9 +31,9 @@ Reactor simulation is an essential part of nuclear engineering. There are three 
 
 Low fidelity models are those models that include no physics at run time. These types of models work for systems that have a set pattern of behavior. For example, recipe reactors use only input and output recipes. This means that they can simulate a reactor with a single computational opperation.  Some low fidelity models include interpolations techniques to build libraries on the fly. For example, interpolating between recipes for 3\% enriched fuel, and 4\% enriched fuel might be used to get a 3.5\% enriched fuel recipe. s
 
-High fidelity models are performed using neutronics calculations and bateman equation solvers. These models tend to require a great amount of detail to set up, and a heavy amount of computation to complete. An example of a high fidelity reactor model is the MCNP\citeme burn card.  
+High fidelity models are performed using neutronics calculations and bateman equation solvers. These models tend to require a great amount of detail to set up, and a heavy amount of computation to complete. An example of a high fidelity reactor model is the MCNP\cite{mcnp5monte} burn card.  
 
-Medium fidelity models are those that include physics calculations during their operation. These models typically work off datasets that are built ahead of time with higher fidelity models. The physics they incorperate uses the information in these types, or outside sources to modify the data in the datasets. Examples of these medium fidelity models are Class\citeme, and Bright-lite\citeme. 
+Medium fidelity models are those that include physics calculations during their operation. These models typically work off datasets that are built ahead of time with higher fidelity models. The physics they incorperate uses the information in these types, or outside sources to modify the data in the datasets. Examples of these medium fidelity models are Class\cite{class}, and Bright-lite\cite{brightlite}\cite{flanagan}. 
 
 These medium fidelity models can incorperate a number of different techniques to perform their tasks. Bright-lite, for example, uses a fluence based neutron balance approach to determine the behavior of the reactor. Class, however, uses a set of reactor input and output recipes and machine learning to determing reactor behavior. To understand how these different modeling choices impact a fuel cycle, or the isotopic behavior of a reactor type, it is important for the models to all start from the same base information. 
 
@@ -42,7 +41,7 @@ At present medium fidelity models use different methods for generating their dat
 
 This work discusses a methodology, know as XSGen, that aims to provide a basis for generation of datasets that all of these software could use to create a canonical sets of data for multiple medium fidelity models to use moving forward. 
 
-XSGen links several peices of software together to automate the generation of medium fidelity model datasets. The first piece of software is a high fidelity neutronics code. XSGen uses OpenMC as the software to perform this step. Flux is extracted from OpenMC\citeme. This is used by a cross section calculation software to generate one-group or multi-group cross-sections. This operation is performed by PyNE\citeme Python for Nuclear Engineers. Finally using the one-group or multi-group cross-sections a burnup solver is employed. Currently this role is completed by Origen2.2\citeme, and therefore one-group cross-sections are required.  
+XSGen links several peices of software together to automate the generation of medium fidelity model datasets. The first piece of software is a high fidelity neutronics code. XSGen uses OpenMC as the software to perform this step. Flux is extracted from OpenMC\cite{class}. This is used by a cross section calculation software to generate one-group or multi-group cross-sections. This operation is performed by PyNE\cite{pyne} Python for Nuclear Engineers. Finally using the one-group or multi-group cross-sections a burnup solver is employed. Currently this role is completed by Origen2.2\cite{origen2}, and therefore one-group cross-sections are required.  
 
 This set of software is capable of providing inputs that medium fidelity models could use; time dependent one group cross-sections, time dependent multi-group cross-sections, transmutation matricies, burnup rates, etc. XSGen stores the outputs of each of these software into a single large database, from there medium fidelity models can extract the information they need to derive a new dataset for use. 
 
@@ -186,11 +185,11 @@ One thing to note about this technique is that it assumes that all batches are i
 
 \section{Results}
 \subsection{Generation results}
-Figures \ref{fig:u235xs} and \ref{fig:u238xs} cross section behavior results from running XSgen for a light water reactor using the inputs found in Table \ref{tab:xsgenstats1}. The fuel used was 3.5\% enriched uranium oxide (UOX). The number of energy groups used for this analysis was 1000. 
+Figures \ref{fig:u235xs} and \ref{fig:u238xs} cross section behavior results from running XSgen for a light water reactor using the inputs found in Table \ref{tab:xsgenstats1}. The fuel used was 3.5\% enriched uranium oxide (UOX). The number of energy groups used for this analysis was 1000. The 
 
 \begin{table}[!htb]
 \centering
-\caption{Comparison of VISION and XSgen for the generation of a 33 MWd/kgIHM Burnup.}
+\caption{Reactor details for XSgen comparisons.}
 \label{tab:xsgenstats1}
 \begin{tabular}{ll}
 Input & Value \\
@@ -276,7 +275,7 @@ Figure \ref{fig:32g} shows the fluxes of the same XSgen run using two different 
 
 \begin{figure}[h]
   \center
-  \includegraphics[scale=0.4]{fluxes.svg}
+  \includegraphics[scale=0.55]{fluxes.png}
   \caption{Fluxes generated by OpenMC for a light water reactor using 32 and 1000 group energy structures.}
   \label{fig:32g}
 \end{figure}
@@ -284,9 +283,9 @@ Figure \ref{fig:32g} shows the fluxes of the same XSgen run using two different 
 Figure \ref{fig:32g} shows the expected behavior between the two group structures. The larger group structure manages to catch the effects of some of stronger resonance groups as well as providing better detail to the lower group structures. 
 
 \subsection{LWR Benchmarking Cases}
-XSGen by itself can not directly be tested against operating reactor systems. It was originally designed to produce datasets a medium fidelity reactor model known as Bright-lite. Therefore, to benchmark XSGen it will be used in conjunction with Bright-lite to produce burnups and isotopes for several known reactor systems.  As Bright-lite has already been benchmarked several times using other datasets [BRIGHT-LITE Benchmark Citations]\citeme it is assumed that the operations within Bright-lite are accurate and any deviations within the results come from XSGen.
+XSGen by itself can not directly be tested against operating reactor systems. It was originally designed to produce datasets a medium fidelity reactor model known as Bright-lite. Therefore, to benchmark XSGen it will be used in conjunction with Bright-lite to produce burnups and isotopes for several known reactor systems.  As Bright-lite has already been benchmarked several times using other datasets\cite{brightlite} it is assumed that the operations within Bright-lite are accurate and any deviations within the results come from XSGen.
 
-The most well studied reactors in the world are light water reactors and as such these will be used as benchmarking tools for XSGen. Primarily the cases represent a range of different enrichments in several light water reactors, comparing the results from XSGen/Bright-lite to recipes from VISION. Additionally, the values will be tested against two cases modelling reactor startup behavior.  [vision citation / transition citation] \citeme.
+The most well studied reactors in the world are light water reactors and as such these will be used as benchmarking tools for XSGen. Primarily the cases represent a range of different enrichments in several light water reactors, comparing the results from XSGen/Bright-lite to recipes from VISION\cite{vision}. Additionally, the values will be tested against two cases modelling reactor startup behavior. 
 
 The XSGen/Bright-light will be benchmarked against VISION at 3.0, 3.5, and 4.0 percent enrichment. Three batch cores will be assumed for all the enrichment test cases.
 The two cases being used to test XSGen in startup behavior will be a 3.1$\%$ enriched light water reactor using four batches and a 3.6$\%$ enriched light water reactor using four batches. The cases will be compared using burnups, isotopic composition of fresh and used fuel.
@@ -341,9 +340,11 @@ Cm244 & 2.57E-5 & -7.94 & 4.54E-5 & -6.06 & 7.00E-5 & -0.90 \\
 
 Table \ref{tab:a} shows the output composition for three different fuel enrichments discussed. These outputs are used as a basis for comparison for Table \ref{tab:xsgenresults}.
 
-Table \ref{tab:xsgenresults} shows a very strong agreement between VISION and Bright-light results using datasets created from light water reactors designed to these particular enrichments. Bright-light has been benchmarked [Bright-lite citations] \citeme against VISION previously using other datasets. This shows that given XSGen generated datasets allows for Bright-lite to match VISION to a 5\% tolence for a majority of isotopes. Those that exhibit the greatest deviations are high order transuranics.
+Table \ref{tab:xsgenresults} shows a very strong agreement between VISION and Bright-light results using datasets created from light water reactors designed to these particular enrichments. Bright-light has been benchmarked e against VISION previously using other datasets. This shows that given XSGen generated datasets allows for Bright-lite to match VISION to a 5\% tolence for a majority of isotopes. Those that exhibit the greatest deviations are high order transuranics.
 
 Am241 shows the largest deviations from the VISION data. There is more Am241 in every case than expected by the VISION results, and less of the species that are arise due to the presence of Am241; Am243, Cm242, Cm244. These results can be explained by a neutron absorption cross section error in Am241. If the neutron absorption cross section for Am241 is too low it can never transmute into Am242 and Am243, which in turn leads to an absence of curium isotopes.
+
+Additionally the Bright-lite model generated by XSgen was tested against a set of Nuclear Enegy Agency (NEA) results\cite{nea}. These results show the start up behavior of the same reaction using two different fuel enrichments. 
 
 \subsection{LWR Startup Behavior Benchmarking}
 \begin{table}[!htb]
@@ -492,6 +493,10 @@ The results in Table \ref{tab:recipe} show that XSgen is with 10\% error on all 
 The work of nuclear reactor models is to provide researchers with insight into the behavior of reactors and by extension nuclear fuel cycles. Comparisons between these models is important to understanding how the choice of model might impact the accuracy of the results researchers might get. Through this work XSgen has demonstrated that it is capable of providing a method of generating one group cross sections and a number of reactor parameters using benchmarked software. This provides a path forward for generating datasets for medium and low fidelity models such that they may all be compared on an equal footing. This will allow researchers to understand how these models affect the results of fuel cycle analysis. 
 
 Additionally XSgen provides a method for automating the generation of reactor types for medium fidelity models. The work here linking XSgen to the Bright-lite reactor model shows that XSgen can be used to expand the set of reactor types and reactor designs (i.e. varied burnups, enrichment, or core structure) that Bright-lite has access to. Through this coupling Bright-lite can be used to quickly example fuel cycles with new or interesting reactor technologies. 
+
+
+\bibliography{xsgen} 
+\bibliographystyle{ieeetr}
 
 \end{document}
 
