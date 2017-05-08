@@ -116,7 +116,6 @@ the collapsed flux with $G$ groups and $E_g$ bin boundaries. The partial energy
 matrix $P$ is defined by the relations in Equation \ref{pem-relations}.
 Equation \ref{pem-relations} assumes that all energies are monotonically decreasing, namely
 that $E_{g+1} \le E_{g} \forall g\in G$ and $E_{h+1} \le E_{h} \forall h\in H$.
-
 \begin{equation}
 \label{pem-relations}
 P_{g,h} = \left\{
@@ -129,15 +128,25 @@ P_{g,h} = \left\{
 \end{array}
 \right.
 \end{equation}
+Once $P$ is obtained, collapsing a dataset (such as group fluxes or group constants) from one
+group structure into another group structure required only taking the dot product of the PEM
+by the data set. Equation \ref{phi-h-to-g} demonstrates this for group fluxes and Equation
+\ref{sig-h-to-g} shows this transition for group constants.
+\begin{equation}
+\label{phi-h-to-g}
+\vec{\phi_g} = P \cdot \vec{\phi_h}
+\end{equation}
+\begin{equation}
+\label{sig-h-to-g}
+\vec{\sigma_g} = P \cdot \vec{\sigma_h}
+\end{equation}
+Importantly, the PEM $P$ may be reused as many times as necessary and the dot product in
+Equations \ref{phi-h-to-g} \& \ref{sig-h-to-g} is relatively cheap computationally.
 
-For the current use case of Bright-lite, this lower group structure is always a one-group.
-However, XSgen may generate any energy group structure desired.
-Thus shifting a given group structure into a desired one using the PEM is simply a matter
-of taking the dot product of the PEM by the original group structure.
 
-\[ \vec{\phi_g} = P \cdot \vec{\phi_h} \tag{1} \label{eq1} \]
-
-Additionally, group-wise cross sections for each nuclide must be calculated. This is done using pointwise cross section data through the following method.
+The above PEM expressions are usable when groupwise cross sections are already available.
+However, when only ENDF or ACE formatted data is availble for a nuclide, these pointwise
+cross sections must be collapsed to groupwise versions.
 Here $E_l$ and $E_u$ represent the lower and upper bounds of the energy group, $E_j$ represents the energy of a pointwise cross section in the data set, $\sigma(E_j)$ represents the cross section at energy $E_j$, and $\sigma_{r,g}^i$ represents a group wise cross section for nuclide i, and cross section for reaction r.
 
 \[ \sigma_{r,g}^i = \frac{\sum_{E_j=E_l}^{E_j=E_u} \frac{1}{2} \cdot[\sigma(E_j)+\sigma(E_{j+1})]\cdot[E_{j+1}-E_{j}]}{E_u-E_l} \tag{2} \label{eq2} \]
