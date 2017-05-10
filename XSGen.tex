@@ -27,13 +27,35 @@
 \onehalfspacing
 
 \section{Introduction}
-Reactor simulation is an essential part of nuclear engineering. Modeling strategies may be categorized in three ways; low, medium, and high fidelity. Each of these models provides different benefits to a simulation but comes with costs to either accuracy or computational time.
+Reactor simulation is an essential part of nuclear fuel cycle modeling. Modeling strategies
+may be categorized in three ways: low, medium, and high fidelity. Each of these modeling
+paradigms provides different benefits to a fuel cycle simulation but comes with tradeoffs to
+either accuracy, computational effort, or both.
 
-Low fidelity models are those models that include no, or very limited,  physics at run time. These types of models work best for systems that have fixed behaviors. For example, a reactor during steady state operation. One type of low fidelity model is a recipe reactor. Here a recipe represents a predefined nuclide vector. These models use fixed input and output recipes. This means that they can simulate a reactor with a single computational operation. Some low fidelity models include interpolation techniques to build libraries on the fly. For example, interpolating between recipes for 3\% enriched fuel, and 4\% enriched fuel might be used to get a 3.5\% enriched fuel recipe. However, interpolating in this manner fails to directly capture any of the physical changes that might happen to the core by switching from either 3\% or 4\% enriched fuel to a 3.5\% fuel.
+Low fidelity models are those models that include limited to no physical computations at run time.
+This class of models works best for systems that have fixed behaviors. For example, a reactor
+during steady state operation may be modeled sufficiently accurately with a low fidelity model.
+Such models are often refered to as \emph{recipe reactors}. A recipe represents a predefined
+nuclide vector. Recipe reactors use fixed pairs of input and output recipes to represent fresh and spent
+fuel respectively. This lookup table strategy is a computationally efficient mechanism to
+represent reactor operation. Alternatively, low fidelity models may include interpolation
+techniques to build libraries on the fly. For example, interpolating between recipes for
+3\% U-235 enriched fuel, and 4\% enriched fuel might be used to get a 3.5\% enriched fuel recipe.
+However, interpolating in this manner fails to directly capture any of the physical changes
+that might happen to the core by switching from either 3\% or 4\% enriched fuel to a 3.5\% fuel.
+
+Medium fidelity models are those that include physics calculations, but fall short of
+full neutron transport or multiphysics calculations. These models typically require
+pre-built datasets which are constructed from the results of higher fidelity models.
+Medium fidelity models synthesize the pre-built datasets and reasonablly fast physics
+algorthims (< 1 minute execution time). This combination of well structured data and
+quick solvers allows for a significatly higher degree of modularity, flexibility, and accuracy
+for medium fidelity models over their low fidelity counterparts. Additionally, their average
+axecution time is orders of magnitude lower than full neutron transport and multiphysics
+calculations. Examples of medium fidelity reactor models are Class\cite{class}
+and Bright-lite\cite{brightlite,flanagan}.
 
 High fidelity models are performed using neutronics calculations and Bateman equation\cite{Bateman} solvers. These models tend to require details on the entire reactor design to set up. Additionally, due to the necessity to simulate a large number of neutrons to produce higher accuracy, these models require a heavy amount of computation to complete. An example of a high fidelity reactor model is the MCNP\cite{mcnp5monte} burn card which couples MCNP's Monte Carlo simulation with a depletion calculator.
-
-Medium fidelity models are those that include physics calculations, but fall short of full neutron transport or multiphysics calculations, during their operation. These models typically work off datasets that are built ahead of time using higher fidelity models. The physics they incorperate uses the information in these datasets, or outside sources (cross section data, reactor design data, etc.) to modify the data in the datasets and increase the fidelity of the results. Examples of these medium fidelity models are Class\cite{class}, and Bright-lite\cite{brightlite}\cite{flanagan}.
 
 These medium fidelity models can incorperate a number of different techniques to perform their tasks. Bright-lite, for example, uses a fluence based neutron balance approach to determine the behavior of the reactor. It also includes optional physics behaviors, such as disadvantage factors, batch physics, and fuel blending. Class, on the other hand, uses a set of reactor input and output recipes and recursive neural networks to determing reactor behavior. To understand how these different modeling choices impact a fuel cycle, or the isotopic behavior of a reactor type, it is important for the models to all start from the same base information, such as one-group cross sections in a reactor.
 
