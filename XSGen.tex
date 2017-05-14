@@ -263,32 +263,47 @@ the particular nuclide in question. $N_j$ represents the number density [1/cm$^3
 nuclide $j$, and $\sigma_{t,g}^i$ is the flux weighted total cross section of
 the $i^\mathrm{th}$ nuclide in energy bin $g$.
 
-Therefore, similar to the mechanism described in the previous equation for calculating the one-group flux weighted cross sections, these are multigroup flux weighted cross sections. Because this data is pointwise, a pointwise flux is also required. OpenMC does not output a pointwise flux, so a pointwise flux from ENDF is used as a supplement. The equation for this flux is as follows.
-
-
-\[ \phi = \begin{cases}
-      \frac{2\pi\sqrt{2E*1e6}}{(\pi kT)^{3/2}}e^{\frac{-E*1e6}{kT}} & E\leq 0.155e-6 \\
-      \frac{1}{\sqrt{2E*1e6}} + 0.453e^{-1.036E}*\sinh{\sqrt{2.29E}} & E > 0.155e-6 \\
-   \end{cases} \tag{5} \label{eq5}
-\]
-
-Where $k$ is the Boltzman constant, $T$ is the temperature, and E is the energy. This formulation of the flux may be seen in Figure \ref{fig:therm}. This calculation is meant to approximate the flux spectrum of a LWR\cite{spectrum}.
+The total cross sections in Equation \ref{ssw} may be computed from continuous energy
+pointwise ENDF or ACE formatted data for those species where such data sets are available.
+The method for computing the  $\sigma_{t,g}^i$ is the same as in Equation
+\ref{pointwise-collapse} \& \ref{pointwise-pem} for a single energy group.  However,
+the challenge in this circumstance is obtaining a pointwise flux. OpenMC and does not output
+a pointwise flux, so a surrogate pointwise flux is used which approximates the normalized shape
+of the reactor. The equation for a surrogate pointwise flux for a PWR may be seen in
+Equation \ref{pointwise-flux} \cite{spectrum}.
+\begin{equation}
+\label{pointwise-flux}
+\phi =
+\begin{cases}
+    \frac{2\pi\sqrt{2E*1e6}}{(\pi kT)^{3/2}}e^{\frac{-E*1e6}{kT}} & : E\leq 0.155e-6 \\
+    \frac{1}{\sqrt{2E*1e6}} + 0.453e^{-1.036E}*\sinh{\sqrt{2.29E}} & : E > 0.155e-6 \\
+\end{cases}
+\end{equation}
+Here, $k$ is the Boltzman constant \TODO{Add units}, $T$ is the temperature\TODO{Add units},
+and E is the energy \TODO{Add units}. Equation \ref{pointwise-flux} is displayed in
+Figure \ref{fig:therm} \TODO{I think that the x-axis is backwards on this figure. Shouldn't the
+thermal peak be lower in magnitude than the fast peak?}.
 \begin{figure}[h]
   \center
   \includegraphics[scale=0.6]{thermspec.png}
-  \caption{The effects of self-shielding on the cross sections for Uranium 235.}
+  \caption{Pointwise flux for PWR the caclulation of self-shielding weights}
   \label{fig:therm}
 \end{figure}
 
-The end result Equation \ref{eq4} is a two-dimensional matrix of X (number of isotopes) by G (number of groups). The number in each entry of the matrix is the cross section weight for a specific isotope, in a specific energy group. These weights must be recalculated every time-step as the number densities of the nuclides in the fuel will charge as burnup increases.
+Thus, Equation \ref{eq4} represents a two-dimensional matrix of dimensions
+$I$ (number of nuclides) by $G$ (number of groups). This entire matrix is the
+must be recalculated every time step. This is because the number densities of the nuclides
+in the fuel will charge as burnup increases, invalidating any previously obtained weights.
+\TODO{Show mathematically how the weights are applied to the group cross sections to
+create self-shielded cross sections}
 
-Note, that the pointwise cross sections used in these calculations must be provided by an outside source such as ENDF\cite{endf}, or OpenMC \cite{openmc}. In this case the OpenMC cross sections were used.
-
-The effects of self shielding on U235 inside of a fuel pellet can be seen in Figure \ref{fig:index}.
+The effects of self shielding on U-235 inside of a fuel pellet man be seen in
+Figure \ref{fig:index}. By inspection, the self-shield effect can be large - and thus
+necessary to include - for one resonance cross sections and low energy capture cross sections.
 \begin{figure}[h]
   \center
   \includegraphics[scale=0.6]{index.png}
-  \caption{The effects of self-shielding on the fission cross section of Uranium 235 inside a fuel pellet at 3.5\%.}
+  \caption{The effects of self-shielding on the fission cross section of Uranium-235 inside a fuel pellet at 3.5\%.}
   \label{fig:index}
 \end{figure}
 
