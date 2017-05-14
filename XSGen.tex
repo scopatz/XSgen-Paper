@@ -18,6 +18,7 @@
 
 \newcommand\mTW{1.5cm}
 \newcommand{\TODO}[1] {{\color{red}\textbf{TODO: #1}}}
+\newcommand{\citeme}{\TODO{[Citation Needed]}}
 
 \begin{document}
 \title{XSgen}
@@ -33,41 +34,83 @@ paradigms provides different benefits to a fuel cycle simulation but comes with 
 either accuracy, computational effort, or both.
 
 Low fidelity models are those models that include limited to no physical computations at run time.
-This class of models works best for systems that have fixed behaviors. For example, a reactor
+This class of modeling works best for systems that have fixed behaviors. For example, a reactor
 during steady state operation may be modeled sufficiently accurately with a low fidelity model.
 Such models are often refered to as \emph{recipe reactors}. A recipe represents a predefined
-nuclide vector. Recipe reactors use fixed pairs of input and output recipes to represent fresh and spent
+nuclide vector. Recipe reactors use fixed pairs of input and output recipes to
+match fresh and spent
 fuel respectively. This lookup table strategy is a computationally efficient mechanism to
 represent reactor operation. Alternatively, low fidelity models may include interpolation
 techniques to build libraries on the fly. For example, interpolating between recipes for
-3\% U-235 enriched fuel, and 4\% enriched fuel might be used to get a 3.5\% enriched fuel recipe.
+3\% U-235 enriched fuel, and 4\% enriched fuel might be used to obtain a 3.5\% enriched
+fuel recipe.
 However, interpolating in this manner fails to directly capture any of the physical changes
 that might happen to the core by switching from either 3\% or 4\% enriched fuel to a 3.5\% fuel.
 
 Medium fidelity models are those that include physics calculations, but fall short of
 full neutron transport or multiphysics calculations. These models typically require
 pre-built datasets which are constructed from the results of higher fidelity models.
-Medium fidelity models synthesize the pre-built datasets and reasonablly fast physics
-algorthims (< 1 minute execution time). This combination of well structured data and
+Medium fidelity models synthesize these pre-built datasets with reasonablly fast physics
+algorthims ($<1$ minute execution time). This combination of well structured data and
 quick solvers allows for a significatly higher degree of modularity, flexibility, and accuracy
 for medium fidelity models over their low fidelity counterparts. Additionally, their average
-axecution time is orders of magnitude lower than full neutron transport and multiphysics
+execution time is orders of magnitude lower than full neutron transport and multiphysics
 calculations. Examples of medium fidelity reactor models are Class\cite{class}
 and Bright-lite\cite{brightlite,flanagan}.
 
-High fidelity models are performed using neutronics calculations and Bateman equation\cite{Bateman} solvers. These models tend to require details on the entire reactor design to set up. Additionally, due to the necessity to simulate a large number of neutrons to produce higher accuracy, these models require a heavy amount of computation to complete. An example of a high fidelity reactor model is the MCNP\cite{mcnp5monte} burn card which couples MCNP's Monte Carlo simulation with a depletion calculator.
+High fidelity models are performed using neutronics calculations, Bateman
+equation\cite{Bateman} solvers, or other coupled multiphysics algorithms. These models tend
+to require information about on the complete reactor design in order to specify and execute.
+Additionally, due to their higher accuracy, these models require a proportionally heavy amount
+of computation to complete. An example of a high fidelity reactor model is the
+MCNP\cite{mcnp5monte} burn card which couples Monte Carlo neutron transport with a depletion
+calculator.
 
-These medium fidelity models can incorperate a number of different techniques to perform their tasks. Bright-lite, for example, uses a fluence based neutron balance approach to determine the behavior of the reactor. It also includes optional physics behaviors, such as disadvantage factors, batch physics, and fuel blending. Class, on the other hand, uses a set of reactor input and output recipes and recursive neural networks to determing reactor behavior. To understand how these different modeling choices impact a fuel cycle, or the isotopic behavior of a reactor type, it is important for the models to all start from the same base information, such as one-group cross sections in a reactor.
+Medium fidelity models provide useful middle road between accuracy and computational effort
+for nuclear fuel cycle simulators. However, they may vary greatly in the mechanisms and
+techniques that they employ. Bright-lite uses a fluence based neutron balance approach to
+determine the behavior of the reactor. It also includes optional physics behaviors, such as
+disadvantage factors, batch physics, and fuel blending. Alternitavely, Class uses a set of
+reactor input and output recipes and recursive neural networks\citeme to dynamically determine
+reactor behavior. To understand how these different modeling choices impact a fuel cycle
+scenario it is important for the models to have same fundemental information basis.
+For example, when comparing medium fidelity reactor models, one-group cross sections
+must be the same.
 
-At present, medium fidelity models use different methods for generating their datasets. This means that any comparison between their methods would be invalid because they all start from different places. Any difference in their final results could be derived from either their data generation step or their methodology. Therefore, only an analysis that uses the same baseline data generation across multiple software is useful for determining any differences in their behavior.
+At present, each medium fidelity model uses its own method for generating input datasets.
+This implies that any methodlogical comparison between would be (at least partially) invalid
+because each model starts with distinct inputs. Thus, any difference in their outputs
+could be attributable to differences in inputs and any similarities in outputs could be
+happenstance. Therefore, only an analysis that uses the same baseline datasets
+is useable for teasing out differnces that arrise purely from methodology.
 
-This work discusses a methodology, available in the XSgen software package, that provides a basis for generation of datasets that medium fidelity models could use to create canonical sets of data.
+This paper discusses a method which generates datasets usable by medium fidelity reactor models.
+The authors term this method XSgen and a concrete implementation of this method is available
+in the cooresponding BSD-licensed XSgen software package.
 
-XSgen couples several peices of software together to automate the generation of medium fidelity model datasets. The first piece of software is a high fidelity neutronics code. XSgen uses OpenMC as the software to perform this step. Flux is extracted from OpenMC\cite{class}. This is used by a cross section calculation software to generate one-group or multi-group cross-sections. This operation is performed by Pyne, the nuclear engineering toolkit\cite{pyne}. Finally, using either the one-group or multi-group cross-sections, a depletion solver is employed. Currently this role is satisfied by Origen2.2\cite{origen2}, and therefore one-group cross-sections are required.
+XSgen couples a neutron transport code with a depletion solver to automate the generation of
+medium fidelity reactor model datasets. XSgen uses OpenMC\citeme as neutron transport.
+A one thousand group logarithimically spaced flux is extracted from OpenMC. This flux is
+measured in the fuel region of supplied reactor geometry. This flux is fed into a cross
+section collapser to generate one-group or multi-group cross sections. This operation is
+performed by PyNE\cite{pyne}, the nuclear engineering toolkit. Finally, either the
+one-group or multi-group cross sections are coupled to a depletion solver. Currently, this
+role is satisfied by Origen v2.2\cite{origen2}, which requires one-group cross-sections.
 
-This set of software is capable of providing the inputs that medium fidelity models could use; time dependent one-group cross-sections, time dependent multi-group cross-sections, transmutation matricies, burnup rates,and  neutron production and destruction rates. XSgen stores the outputs of each of these software into a single large database, from there medium fidelity models can extract the information they need to derive a new dataset for use. This process is currently automated for only Bright-lite.
+The XSgen method is capable of providing all of the inputs that medium fidelity reactor models
+may use: time dependent one- or multi-group cross sections, transmutation matricies,
+burnup rates, neutron production rates, and destruction rates.
+XSgen stores the specified data which it generates a single database.
+From here, medium fidelity reactor models are able extract the information they need to
+derive a new dataset for use in a fuel cycle simulation.
 
-XSgen can also be used to set up more accurate comparisons between low fidelity model types, specifically recipe reactors, and medium fidelity reactor model types. This is made possible because XSgen can simulate a fuel bundle well past its effective lifetime in the core. The data generated by an XSgen run of this type contains enough information to build out an estimate of core isotopics at discharge using some reactor batch physics discussed later.
+XSgen can also be used to set up more accurate comparisons between low fidelity recipe reactor
+models and medium fidelity reactor model types. This is made possible because XSgen may also
+simulate a fuel bundle well past its effective lifetime in the core. The data generated by an
+XSgen run of this type contains enough information to build out an estimate of core composition
+at discharge using reactor batch physics discussed later below.
+
+\TODO{Add a paragraph about the sections to come. \S 1 discusses...}
 
 \section{XSgen Workflow}
 The XSgen workflow is composed of three main parts as mentioned above; OpenMC, PyNE, Origen2.2. The first step is the simulation of the reactor core using a Monte Carlo neutron transport simulation. The main result of this is the flux spectrum. The spectrum is then collapsed with a cross section database and converted into a suite of one-group cross sections for a reactor at a given time $t$ (days) after the reactor has started up. These one-group cross sections are then used inside of
