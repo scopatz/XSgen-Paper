@@ -223,14 +223,15 @@ Equations \ref{phi-h-to-g} \& \ref{sig-h-to-g} is relatively cheap computational
 The above PEM expressions are usable when groupwise cross sections are already available.
 However, when only ENDF or ACE continous energy data is available for a nuclide, these pointwise
 cross sections must be collapsed to groupwise versions.
-In Equation \ref{pointwise-collapse}, $E_j$ represents the energy of a pointwise cross section in the data set,
-$\sigma(E_j)$ represents the cross section at energy $E_j$, and $\sigma_{r,g}^i$ represents a
+In Equation \ref{pointwise-collapse}, $E_p$ represents the energy of a pointwise cross section
+in the data set,
+$\sigma(E_p)$ represents the cross section at energy $E_p$, and $\sigma_{r,g}^i$ represents a
 groupwise cross section for $i^\mathrm{th}$ nuclide and the $r^\mathrm{th}$ reaction channel.
 \begin{equation}
 \label{pointwise-collapse}
-\sigma_{r,g}^i = \frac{1}{2} \frac{\sum_{E_j\ge E_{g+1}}^{E_j\le E_g}
-                                   \left(\sigma(E_j)+\sigma(E_{j+1})\right)
-                                   \left(E_{j+1}-E_{j}\right)}
+\sigma_{r,g}^i = \frac{1}{2} \frac{\sum_{E_p\ge E_{g+1}}^{E_p\le E_g}
+                                   \left(\sigma(E_p)+\sigma(E_{p+1})\right)
+                                   \left(E_{p+1}-E_{p}\right)}
                                   {E_g-E_{g+1}}
 \end{equation}
 Equation \ref{pointwise-collapse} amounts to a trapezoidal integration weighted by the
@@ -247,9 +248,20 @@ elementwise multplication of the group constants and the group fluxes.
 This process is repeated for all nuclides and reaction channels. The resultant one-group
 cross section dataset is used to construct a custom ORIGEN v2.2 TAPE9 file\cite{origen2}.
 
-Pyne will also allow the user to incorperate the effects of self-shielding into XSgen. It does this by building an energy dependent function of weights for each isotope. These weights scale the one-group cross section depending on the density of the isotope represented by this cross section. The more dilute a isotope is within a material composition, the lower the effective cross section of the isotope. This done using equation 4. Here all isotopes in the fuel are included in the set of $I$, and $J$ is the isotope in question. $N_j$ represents the number density of isotope $J$, and $\sigma_{t,n}^i$ represents a flux weighted total cross section of an isotope, i, in a specific energy bin, g.
-
-\[ \omega_{j,g}=\frac{1}{\frac{\sum_{i\neq j}N^i * \sigma_{t,g}^i}{N^j}+\sigma_{t,g}^j} \tag{4} \label{eq4} \]
+PyNE also enables the user to incorperate self-shielding effects \citeme into the cross sections
+computed for XSgen. It does so by building an energy dependent function of weights for each
+nuclide. These weights scale the one-group cross section depending on the density of the
+nuclide. The more concentrated a nuclide is within a material composition, the lower the
+effective cross section is of that nuclide. Self-shielding weights are computed by the
+expression in Equation \ref{ssw} \citeme.
+\begin{equation}
+\label{ssw}
+\omega_{j,g}=\left(\frac{\sum_{i\neq j}N_i \, \sigma_{t,g}^i}{N_j}+\sigma_{t,g}^j\right)^{-1}
+\end{equation}
+In this expression, all nuclides in the fuel are included in the set of $I$, and $j$ is
+the particular nuclide in question. $N_j$ represents the number density [1/cm$^3$] of
+nuclide $j$, and $\sigma_{t,g}^i$ is the flux weighted total cross section of
+the $i^\mathrm{th}$ nuclide in energy bin $g$.
 
 Therefore, similar to the mechanism described in the previous equation for calculating the one-group flux weighted cross sections, these are multigroup flux weighted cross sections. Because this data is pointwise, a pointwise flux is also required. OpenMC does not output a pointwise flux, so a pointwise flux from ENDF is used as a supplement. The equation for this flux is as follows.
 
