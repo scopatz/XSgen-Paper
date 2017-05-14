@@ -155,7 +155,7 @@ step specified is reached. The XSgen workflow is displayed in Figure \ref{fig:fl
 \label{fig:flow}
 \end{figure}
 
-\subsection{OpenMC}
+\subsection{Neutron Transport via OpenMC}
 OpenMC was used as the reference neutron transport calculator for modeling reactors.
 It was chosen due to its availablity (it is BSD licensed), its ability to quickly perform
 reactor oriented calculations\cite{serpentvmonte}, and it capability to compute scattering
@@ -168,7 +168,7 @@ and templating it according to a set of field variabless that XSgen provides.
 XSgen also provides standard templates representing pressurized water reactor (PWR)
 and fast reactor (FR) lattices. More standard templates may be added to XSgen in the future.
 
-\subsection{PyNE}
+\subsection{Cross Section Collapse via PyNE}
 PyNE is used to perform the group collapse
 from cross section databases down to the one-group or multi-group cross sections.
 PyNE is capable of reading in cross section data from both ACE\cite{ace} and ENDF\cite{endf}
@@ -307,21 +307,47 @@ necessary to include - for one resonance cross sections and low energy capture c
   \label{fig:index}
 \end{figure}
 
-\subsection{Origin2.2}
-Once the TAPE9 has been constructed, it is used to perform two types of burnup operations. The first is performed on the fuel. This includes the full list of nuclides currently in the fuel. Once this is done the nuclide vector at the end of the fuel burn is passed back to OpenMC to start the operation all over again.
+\subsection{Depletion via ORIGEN v2.2}
+\label{sec:origen}
+Once a TAPE9 file (the cross section format of ORIGEN v2.2) has been constructed, it is
+used to perform two types of burnup operations. The first is performed on the fuel and
+includes the entire fuel material composition. Once this is done the material at the
+end of the fuel burn is passed back to OpenMC to start the next XSgen time step iteration.
 
-The second calculation is used to build a dataset for a specific nuclide. These runs take one kilogram of a pure isotope as the input fuel. At the end of the run, the burnup, neutron production/destruction, and transmutation matrix are all recorded. The nuclides of interest are chosen ahead of time by the user of the software, these are the nuclides that the user wishes to use as the input fuel for the reactor type/design that they are investigating.
+The second type of depletion calculation is used to build a transmutation dataset for a
+specific nuclide. These runs take one kilogram of a pure, intial isotope as the input to
+ORIGEN. At the end of the depeltion, the burnup, neutron production rate, neutron
+destruction rate, and transmutation matrix are all recorded. The nuclides of interest
+for which these parameters are tracked are chosen ahead of time by the XSgen user.
+This nuclide set represents which nuclides are admissable as fresh fuel for the medium
+fidelity reactor model.
 
-\subsection{XSgen as a recipe generator}
-Generating a recipe for a recipe reactor is done by simulating the full reactor lifetime. One technique is to use a high fidelity model to accurately model the burnup and transmutation of a reactor core from loading to discharge of a fuel assembly.
+\subsection{XSgen as a Recipe Generator}
+XSgen may be used to construct recipes for low fidelity reactor models. Recipes creation
+requires simulating the full reactor lifetime. One technique is to use a high fidelity
+model to accurately model the burnup and transmutation of a reactor core from loading to
+discharge of a fuel assembly. XSgen performs precisely this calculation.
 
-As stated, XSgen also tracks a kilogram of fuel through the reactor. When this fuel becomes subcritical it represents a single batch reactor core becoming subcritical and requiring refueling. However, it is possible to predict the burnup of a multi-batch core from the burnup of a single batch core. The following formula shows how this might be done.
+XSgen necessarily tracks a single kilogram of fresh fuel through the reactor. When this
+fuel becomes subcritical it represents a single batch reactor core becoming subcritical.
+For a single batch core, this is when refueling would be required. However, it is possible
+to predict the burnup of a multi-batch core from the burnup of a single batch core.
+Following the linear reactivity model \citeme, Equation \ref{burnup-n} estimates the burnup
+$BU_n$ [MWd/kg] of an $n$-batch core based on the burnup of a single batch core.
+\begin{equation}
+\label{burnup-n}
+BU_n = \frac{2n}{n+1} \, BU_1
+\end{equation}
+This technique works primarily with reactor cores that have a solid fuel which undergoes
+fuel shuffling during a refueling operation. Using the predicted burnup of the fuel,
+it is possible to extract the fluence, and therefore output composition,
+of the fuel at that burnup. \TODO{this needs much more explanation or citations to our various
+papers and dissertations on this topic}
 
-\[  BU_n = BU_1 \cdot (\frac{2n}{n+1}) \tag{6} \label{eq6} \]
-
-Where $n$ is the number of batches. This technique works primarily with reactor cores that have a solid fuel that undergoes fuel shuffling during a refueling operation. Using the predicted burnup of the fuel it is possible to extract the fluence, and therefore output composition, of the fuel at that burnup.
-
-One thing to note about this technique is that it assumes that all batches are independent of each other. Additionally, this formula works best for reactors that have a decreasing criticality over a cycle. It would not work to provide a recipe for an accelerator driven system, or a breeder reactor. These systems aim to maintain a criticality of one as the fuel burns by breeding in new fissionable material.
+Note that this technique assumes that all batches are independent of one another
+Additionally, Equation \ref{burnup-n} works best for reactors that have a decreasing
+criticality over a cycle. Specifically, it does not provide valid recipes for accelerator
+driven systems or breeder reactors.
 
 \section{Cross section generation results}
 Figures \ref{fig:u235xs} and \ref{fig:u238xs} show cross section behavior results from running XSgen for a light water reactor using the inputs found in Table \ref{tab:xsgenstats1}. The fuel used was 3.5\% enriched uranium oxide (UOX). The number of energy groups used for this analysis was 1000, log spaced evenly between 0.001eV and 10MeV.
