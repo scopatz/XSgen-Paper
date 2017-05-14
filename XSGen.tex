@@ -113,9 +113,14 @@ at discharge using reactor batch physics discussed later below.
 \TODO{Add a paragraph about the sections to come. \S 1 discusses...}
 
 \section{XSgen Workflow}
-The XSgen workflow is composed of three main parts as mentioned above; OpenMC, PyNE, Origen2.2. The first step is the simulation of the reactor core using a Monte Carlo neutron transport simulation. The main result of this is the flux spectrum. The spectrum is then collapsed with a cross section database and converted into a suite of one-group cross sections for a reactor at a given time $t$ (days) after the reactor has started up. These one-group cross sections are then used inside of
-a Bateman equation solve to calculate the burnup, neutron production, neutron destruction,
-and transmutation matrices. The value of $t$ is set by the user when XSgen is executed.
+The main line of the XSgen workflow couples three primary tools: neutron transport via OpenMC,
+cross section collapse via PyNE, and depletion Origen v2.2. The first step is the simulation
+of the reactor core using a Monte Carlo neutron transport simulation. The primary result of
+this is a highly resolved flux spectrum. This spectrum is then collapsed with a standard
+cross section database and converted into a suite of one-group cross sections for a reactor
+at $t$ [days] after the reactor has started up. These one-group cross sections are then used
+inside of a depletion solver to compute the burnup, neutron production rate, neutron
+destruction rate, and transmutation matrices. The value of $t$ is set by the user when XSgen is executed.
 The composition of the material at the end of the time step is then submitted back to
 the Monte Carlo simulator as input. This process is repeated until the maximum time
 step specified is reached. This flow is displayed in Figure \ref{fig:flow}.
