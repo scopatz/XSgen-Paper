@@ -95,7 +95,7 @@ measured in the fuel region of supplied reactor geometry. This flux is fed into 
 section collapser to generate one-group or multi-group cross sections. This operation is
 performed by PyNE\cite{pyne}, the nuclear engineering toolkit. Finally, either the
 one-group or multi-group cross sections are coupled to a depletion solver. Currently, this
-role is satisfied by Origen v2.2\cite{origen2}, which requires one-group cross-sections.
+role is satisfied by ORIGEN v2.2\cite{origen2}, which requires one-group cross-sections.
 
 The XSgen method is capable of providing all of the inputs that medium fidelity reactor models
 may use: time dependent one- or multi-group cross sections, transmutation matricies,
@@ -114,29 +114,29 @@ at discharge using reactor batch physics discussed later below.
 
 \section{XSgen Workflow}
 The main line of the XSgen workflow couples three primary tools: neutron transport via OpenMC,
-cross section collapse via PyNE, and depletion Origen v2.2. The first step is the simulation
+cross section collapse via PyNE, and depletion ORIGEN v2.2. The first step is the simulation
 of the reactor core using a Monte Carlo neutron transport simulation. The primary result of
 this is a highly resolved flux spectrum. This spectrum is then collapsed with a standard
 cross section database and converted into a suite of one-group cross sections for a reactor
-at $t$ [days] after the reactor has started up. These one-group cross sections are then used
-inside of a depletion solver to compute the burnup, neutron production rate, neutron
-destruction rate, and transmutation matrices. The value of $t$ is set by the user when XSgen is executed.
-The composition of the material at the end of the time step is then submitted back to
-the Monte Carlo simulator as input. This process is repeated until the maximum time
-step specified is reached. This flow is displayed in Figure \ref{fig:flow}.
+at time step $t$ [days] after the reactor has started up. These one-group cross sections are
+then used by a depletion solver to compute the burnup, neutron production rate, neutron
+destruction rate, and transmutation matrices. The value of $t$ is set by the user when XSgen
+is executed. The composition of the material at the end of the time step is then submitted
+back to the neutron transport solver as input. This process is repeated until the maximum time
+step specified is reached. The XSgen workflow is displayed in Figure \ref{fig:flow}.
 
 \begin{figure}\center\begin{tikzpicture}[node distance=2cm]
 \node (start) [startstop] {Start};
-\node (openmc) [process, below of = start]{OpenMC};
+\node (openmc) [process, below of = start]{Neutron transport via OpenMC};
 \node (omcinput) [io, right of = openmc, xshift = 2cm]{OpenMC input file};
 \node (omcupdate) [process, left of = openmc, xshift = -3cm]{Update OpemMC material composition};
-\node (pyne) [process, below of = openmc]{PyNE};
+\node (pyne) [process, below of = openmc]{Cross section collapse via PyNE};
 \node (pynexs) [io, right of = pyne, xshift = 2cm]{Cross section data};
-\node (origen22) [process, below of = pyne]{Origen 2.2};
+\node (origen22) [process, below of = pyne]{Depletion via\\ORIGEN};
 \node (compupdate) [process, left of = origen22, xshift = -3cm]{Update fuel composition};
 \node (timecheck) [decision, below of = origen22, yshift = -1.5cm]{End of simulated time?};
 \node (timeinc) [process, left of = timecheck, xshift = -3cm]{Increment time step};
-\node (brightlite) [process, below of = timecheck, yshift = -1.5cm]{Build Bright-lite Database};
+\node (brightlite) [process, below of = timecheck, yshift = -1.5cm]{Build Database};
 \node (stop) [startstop, below of = brightlite] {Stop};
 \draw [arrow] (start) -- (openmc);
 \draw [arrow] (omcinput) -- (openmc);
@@ -151,15 +151,22 @@ step specified is reached. This flow is displayed in Figure \ref{fig:flow}.
 \draw [arrow] (timecheck) -- node[anchor=east]{Yes}(brightlite);
 \draw [arrow] (brightlite) -- (stop);
 \end{tikzpicture}
-\caption{Flow chat of the XSgen process for building Bright-lite data tables.}
+\caption{Flow chat of the XSgen process for building medium fidelity reactor databases.}
 \label{fig:flow}
 \end{figure}
 
 \subsection{OpenMC}
-OpenMC was used as the reference neutron transport software for modeling reactors.The software was chosen due to its availablity (it is open source), ability to quickly perform
-reactor oriented calculations\cite{serpentvmonte}, and the ability to compute scattering kernels. Currently, XSgen only requires the group flux values from OpenMC, and it extracts these each timestep. Input templates for OpenMC can be specified in the XSgen run control file.
+OpenMC was used as the reference neutron transport calculator for modeling reactors.
+It was chosen due to its availablity (it is BSD licensed), its ability to quickly perform
+reactor oriented calculations\cite{serpentvmonte}, and it capability to compute scattering
+kernels. Currently, XSgen only obtains the group flux values from OpenMC. It extracts
+these for each timestep.
 
-Standard templates may also be added to XSgen itself for use in future modeling. New templates can be added to the XSgen library of reactor types by creating a new input file for OpenMC that simulates the choice reactor type. Once added to the XSgen suite of reactors the type can be accessed repeatedly.
+Input templates for OpenMC can be specified in the XSgen run control file.
+New templates may be constructed for a reactor design by creating a new input file for OpenMC
+and templating it according to a set of field variabless that XSgen provides.
+XSgen also provides standard templates representing pressurized water reactor (PWR)
+and fast reactor (FR) lattices. More standard templates may be added to XSgen in the future.
 
 \subsection{PyNE}
 PyNE, a Nuclear Engineering toolkit library, is used to perform the group collapse
