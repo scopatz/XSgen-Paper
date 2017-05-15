@@ -601,7 +601,7 @@ Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
 2 & 23.86 & 0.76 & 0.6 & 0.818 \\
 3 & 31.75 & 0.8 & 0.677 & 0.921 \\
 4 & 32.00 & 0.85 & 0.697 & 0.943 \\
-Equil. & 33.00 & 0.85 & 0.688 & 0.943
+5+ & 33.00 & 0.85 & 0.688 & 0.943
 \end{tabular}
 \end{table}
 
@@ -617,7 +617,7 @@ Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
 3 & 32.510 & 2.394 & 0.789 & -1.375 & 0.710 & 4.883 & 0.970 & 5.231 \\
 4 & 31.230 & -2.406 & 0.851 & 0.117 & 0.680 & -2.254 & 0.906 & -5.031 \\
 5 & 33.010 & 0.030 & 0.843 & -0.824 & 0.703 & 2.198 & 0.946 & 0.285 \\
-Equal. & 33.020 & 0.060 & 0.855 & 0.588 & 0.700 & 1.833 & 0.951 & 0.820
+6+ & 33.020 & 0.060 & 0.855 & 0.588 & 0.700 & 1.833 & 0.951 & 0.820
 \end{tabular}
 \end{table}
 
@@ -644,7 +644,7 @@ Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
 4 & 41.00 & 0.640 & 0.785 & 1.177 \\
 5 & 39.00 & 0.940 & 0.808 & 1.166 \\
 6 & 40.60 & 0.88 & 0.817 & 1.194 \\
-Equil. & 42.50 & 0.81 & 0..827 & 1.223
+7+ & 42.50 & 0.81 & 0..827 & 1.223
 \end{tabular}
 \end{table}
 
@@ -661,17 +661,25 @@ Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
 4 & 42.57 & 3.83 & 0.61 & -5.33 & 0.804 & 2.42 & 1.14 & -2.94 \\
 5 & 41.00 & 5.13 & 0.85 & 9.526 & 0.79 & -2.81 & 1.10 & -5.91 \\
 6 & 43.83 & 3.04 & 0.82 & 6.53 & 0.79 & -3.58 & 1.11 & -7.45 \\
-Equal. & 42.32 & -0.43 & 0.81 & -0.44 & 0.79 & -4.54 & 1.11 & -9.42
+7+ & 42.32 & -0.43 & 0.81 & -0.44 & 0.79 & -4.54 & 1.11 & -9.42
 \end{tabular}
 \end{table}
 
 Table \ref{tab:d} and Table \ref{tab:e} are analogous to Table \ref{tab:b} and Table \ref{tab:c}
-for the 3.6\% U-235 enriched LWR. Again, a similar trend is visible in this case with the
+for the 3.6\% U-235 enriched LWR case. Again, a similar trend is visible in this case with the
 exception that the equilibrium results for the total amount of plutonium within the
-reactor is 9.2\% lower in the Bright-lite model. The amount of fissile plutonium is also lower, but within acceptable bounds. The lower amount of fissile plutonium leads to less transmutations into the high order actinides.
+reactor is 9.2\% lower in the Bright-lite model. The amount of fissile plutonium is also lower,
+but within acceptable bounds (\TODO{which are?}). The lower amount of fissile plutonium leads
+to less build up of the high order actinides.
 
-\section{MOX Case Benchmarking}
-Simply replicating the behavior of a light water reactor would not demonstrate the full capabilities of the XSgen software. To display the capability of the system to extend to more advanced reactor types, XSgen will be used to generate a MOX fuel library for Bright-lite. It will then be used to simulate a single pass MOX reactor. In order to compare this on an apples to apples basis, the input fuel into the Bright-lite reactor will be exactly the same as that for a similar VISION reactor. This test will be able to demonstrate the flexibility of the combined XSgen/Bright-lite system that allows it to model advanced reactor types.
+\section{MOX Benchmarking}
+To demonstrate the full capability XSgen requires applying the method to more advanced
+reactor types than base case LWRs. To this end, XSgen was used to generate a mixed-oxide (MOX)
+fuel library for Bright-lite. This was then applied to a single pass MOX fuel cycle scenario.
+In order to maintain a valid comparison, the input fuel composition into the Bright-lite MOX
+reactor was exactly the same as a VISION MOX reactor.
+This test demonstrates the flexibility of the combined XSgen/Bright-lite system, which enables
+the modeling of advanced reactor types with minimal user effort.
 
 \begin{table}[!htb]
 \centering
@@ -695,9 +703,25 @@ CM244 & - & 1.03E-3 & 9.84E-4 & -4.4
 \end{tabular}
 \end{table}
 
-The data in Table \ref{tab:g} shows that the results of Bright-lite given the new XSgen MOX reactor cross section fairs quite well compared to VISION. There are some outliers in the behaviors, specifically the higher order species and U236. The differences with the higher order actinides, Am241 and higher, most likely stem from the high amount of Pu240. This suggests that Pu240 is not transmuting into Pu241 at a high enough rate, which therefore lowers the equilibrium concentration of Pu241 and all isotopes that derive from it.
+The data presented in Table \ref{tab:g} displays the results of Bright-lite given the XSgen MOX
+reactor cross sections. Overall, the Bright-lite model obtains output compositions that
+are quite similar to the output recipe of VISION. For most actinides listed, the relativer error
+is less than 5\%, even for higher order species such as the curium isotopes.
+The differences with respect to some of the higher order actinides (Am241 and higher) most
+likely stem from the relatively high amount of Pu240. This suggests that Pu240 neutron capture
+cross section is lower in Bright-lite. This could arrise from a difference in the cross
+section data sets used or in methodology (perhaphs self-shielding is treated differently).
+The low Pu240 capture cross section thus lowers the equilibrium concentration of Pu241 and
+nuclides isotopes that derive from it.
 
-One of the possible causes of this is uncertainity in the exact dimensions and behavior of the VISION MOX reactor. In order to get the most accurate results XSgen needs to know the specification of the MOX reactor. Instead for this work a generic 17x17 light water reactor core was chosen to use as a base for the XSgen run. If the input and output compositions generated for VISION were made from a reactor core of a different design it would result in slightly different cross sections and therefore different behavior.
+Another potential causes of composition uncertainity is that the exact dimensions and behavior
+of the VISION MOX reactor are not availble in the VSION database. In order to get the
+most accurate cross sections and compositions, XSgen must hav a full and complete reactor
+specification. Since such a specification was not available for this MOX case,
+a generic 17x17 LWR core was chosen instead. Thus the descrepencies seen in the output
+compositions in Table \ref{tab:g} are not unreasonable. Even without knowing the
+true MOX reactor used to formulate the VISION recipes, the resultant compositions line
+up well enough for the important fuel cycle nuclides.
 
 \section{Recipe Reactor Generation}
 As discussed above, XSgen can be used to create recipe reactors as well. The following results show a comparison between VISION and XSgen recipe reactors. These reactors use a 3.2\% U235 enriched fuel. The XSgen model assumes the information found in Table \ref{tab:xsgenstats} about the reactor.
