@@ -113,6 +113,7 @@ at discharge using reactor batch physics discussed later below.
 \TODO{Add a paragraph about the sections to come. \S 1 discusses...}
 
 \section{XSgen Workflow}
+\label{sec-workflow}
 The main line of the XSgen workflow couples three primary tools: neutron transport via OpenMC,
 cross section collapse via PyNE, and depletion ORIGEN v2.2. The first step is the simulation
 of the reactor core using a Monte Carlo neutron transport simulation. The primary result of
@@ -673,6 +674,7 @@ but within acceptable bounds (\TODO{which are?}). The lower amount of fissile pl
 to less build up of the high order actinides.
 
 \section{MOX Benchmarking}
+\label{sec-mox-benchmark}
 To demonstrate the full capability XSgen requires applying the method to more advanced
 reactor types than base case LWRs. To this end, XSgen was used to generate a mixed-oxide (MOX)
 fuel library for Bright-lite. This was then applied to a single pass MOX fuel cycle scenario.
@@ -724,33 +726,42 @@ true MOX reactor used to formulate the VISION recipes, the resultant composition
 up well enough for the important fuel cycle nuclides.
 
 \section{Recipe Reactor Generation}
-As discussed above, XSgen can be used to create recipe reactors as well. The following results show a comparison between VISION and XSgen recipe reactors. These reactors use a 3.2\% U235 enriched fuel. The XSgen model assumes the information found in Table \ref{tab:xsgenstats} about the reactor.
+As discussed in \S\ref{sec-workflow}, XSgen may be used to create recipe reactors.
+This section displays a comparison between VISION and XSgen recipe reactors. These LWRs accept
+a 3.2\% U235 enriched fresh fuel. The XSgen model was constructed with reactor design
+information found in Table \ref{tab:xsgenstats}.
 
 \begin{table}[!htb]
 \centering
 \caption{Specification forthe XSgen 33 MWd/kgIHM Burnup LWR.}
 \label{tab:xsgenstats}
-\begin{tabular}{ll}
+\begin{tabular}{|ll|}
+\hline
 Input & Value \\
-Fuel Cell Radius & 0.410 cm \\
-Void Cell Radius & 0.4185 cm \\
-clad Cell Radius & 0.475 cm \\
-Unit Cell Pitch  & 1.32 cm \\
-Unit Cell Height & 10.0 cm \\
-Fuel Density & 10.7 [g/cc] \\
-Clad Density & 5.87 [g/cc] \\
-Coolant Density & 0.73 [g/cc]
+\hline
+Fuel Cell Radius [cm] & 0.410 \\
+Void Cell Radius [cm] & 0.4185 \\
+clad Cell Radius [cm] & 0.475 \\
+Unit Cell Pitch  [cm] & 1.32 \\
+Unit Cell Height [cm] & 10.0 \\
+Fuel Density [g/cc] & 10.7 \\
+Clad Density [g/cc] & 5.87 \\
+Coolant Density [g/cc] & 0.73 \\
+\hline
 \end{tabular}
 \end{table}
 
-Table \ref{tab:recipe} shows the difference between the VISION 3.2\% light water reactor and the XSgen version of that reactor.
+Table \ref{tab:recipe} shows the difference between the VISION 3.2\% LWR case and the
+cooresponding XSgen reactor discharge recipes.
 
 \begin{table}[!htb]
 \centering
 \caption{Comparison of VISION and XSgen for the generation of a 33 MWd/kgIHM Burnup.}
 \label{tab:recipe}
-\begin{tabular}{llllll}
+\begin{tabular}{|l|lll|}
+\hline
 Isotope & Vision & XSgen & Difference(\%) \\
+\hline
 U235 & 8.06E-03 & 7.84E-03 & -2.85 \\
 U238 & 9.44E-01 & 9.67E-01 & 2.36 \\
 Pu238 & 1.09E-04 & 1.01E-04 & -7.80 \\
@@ -762,18 +773,40 @@ Am241 & 2.98E-05 & 2.76E-05 & -7.97 \\
 Am243 & 7.90E-05 & 7.23E-05 & -9.31 \\
 Cm242 & 1.17E-05 & 1.07E-05 & -9.48 \\
 Cm244 & 2.22E-05 & 2.11E-05 & -5.11 \\
+\hline
 \end{tabular}
 \end{table}
 
-The results in Table \ref{tab:recipe} show that XSgen is with 10\% error on all output isotopics for this reactor design. A possible cause for this differnce is the method used for extrapolating the data for a multi-batch core from a single batch core. Additionally, the design of the VISION reactor is unknown. This means that the reactor modeled with XSgen may not be a perfect one to one match with the reactor model used for VISION.
+The results in Table \ref{tab:recipe} show that XSgen is with 10\% error on all output
+compositions for this reactor design. A possible cause for this differnce is the
+method used for extrapolating the data for a multi-batch core from a single batch core.
+Additionally, the design of the VISION reactor is unknown, similar to the MOX case presented
+in \S\ref{sec-mox-benchmark}. This implies that the reactor modeled with XSgen likely does not
+perfectly match the dimensions of the reactor model used to create the VISION recipes.
 
 \section{Conclusion}
-The work of nuclear reactor models is to provide designers and researchers with insight into the behavior of reactors and by extension nuclear fuel cycles. Comparisons between these models is important to understanding how the choice of model might impact the accuracy of the results. Through this work XSgen has demonstrated that it is capable of providing a method of generating one-group cross sections and a number of reactor parameters to be used in benchmark campaigns. This provides a path forward for generating datasets for medium and low fidelity models such that they may all be compared on an equal footing. This will allow researchers to understand how these models affect the results of fuel cycle analysis.
+The work of nuclear reactor models is to provide designers and researchers with insight
+into the behavior of reactors, and by extension nuclear fuel cycles. Comparisons between
+these models is important to understanding how the choice of model might impact the
+accuracy of the results. This work has demonstrated that XSgen is capable of
+providing one-group cross sections for a wide variety of reactor types.
+This provides a path forward for generating datasets for medium and low fidelity models
+such that fuel cycle scenarios choosing to use different modeling regimes may be compared
+on an even basis. Because equitable comparisons are now possible, the XSgen tool allows
+researchers to understand how different reactor models affect the results of fuel cycle analysis.
 
-Additionally XSgen provides a method for automating the generation of reactor types for medium fidelity models. The work here linking XSgen to the Bright-lite reactor model shows that XSgen can be used to expand the set of reactor types and reactor designs (i.e. varied burnups, enrichment, or core structure) that Bright-lite has access to. Through this coupling Bright-lite can be used to quickly example fuel cycles with new or interesting reactor technologies.
+Additionally, XSgen provides a method for automating the generation of reactor types for
+medium fidelity models. The work here linking XSgen to the Bright-lite reactor model shows
+that XSgen can be used to expand the set of reactor types and reactor designs
+(i.e. varied burnups, enrichment, or core structure) that Bright-lite has access to.
+Through this coupling, Bright-lite can be used to quickly examine fuel cycles with new or
+interesting reactor technologies.
 
-Future work should aim to expand this coupling to include other medium fidelity models such as CLASS. This will allow for comparisons between medium fidelity models to be performed using the same source for datasets. Additionally, XSgen currently does not have a template for fast reactor designs or accelerator driven systems. If XSgen is going to provide the data for benchmarking campaigns in the future the capability to simulate these reactor technologies are will be necessary.
-
+Future work aims to expand this coupling to include other medium fidelity models such as CLASS.
+This will allow for comparisons between medium fidelity models to be performed using the
+same source for datasets. Moreover, XSgen currently does not have a stock template for
+fast reactor designs or accelerator driven systems. Specialized reactor templates may be
+needed for future fuel cycle options analysis campaigns.
 
 \bibliography{xsgen}
 \bibliographystyle{ieeetr}
