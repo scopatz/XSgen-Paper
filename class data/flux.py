@@ -46,12 +46,12 @@ y2 = flux1000
 fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
 
-small = ax1.plot(x1, y1, 'gx', label = '32g')
-large = ax2.plot(x2, y2, 'b+', label = '1000g')
+small = ax1.plot(x1, y1, 'k-', label = '32g')
+large = ax2.plot(x2, y2, 'k+', label = '1000g')
 
 ax1.set_xlabel('Energy (MeV)')
-ax1.set_ylabel('Flux (n/s/cm^2)')
-ax2.set_ylabel('Flux (n/s/cm^2)')
+ax1.set_ylabel('Normalized Flux (n/s/cm^2) "--"')
+ax2.set_ylabel('Normalized Flux (n/s/cm^2) "+"')
 ax1.set_xscale('log')
 ax1.set_yscale('log')
 ax2.set_xscale('log')
