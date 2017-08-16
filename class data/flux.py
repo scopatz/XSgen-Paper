@@ -46,19 +46,19 @@ y2 = flux1000
 fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
 
-small = ax1.plot(x1, y1, 'k-', label = '32g')
-large = ax2.plot(x2, y2, 'k+', label = '1000g')
+small = ax1.step(x1, y1, 'k-', label = 'G=32')
+large = ax2.step(x2, y2, 'k+', label = 'G=1000')
 
 ax1.set_xlabel('Energy (MeV)')
-ax1.set_ylabel('Normalized Flux (n/s/cm^2) "--"')
-ax2.set_ylabel('Normalized Flux (n/s/cm^2) "+"')
+ax1.set_ylabel('Normalized Flux (n/s/cm^2) G=32')
+ax2.set_ylabel('Normalized Flux (n/s/cm^2) G=1000')
 ax1.set_xscale('log')
 ax1.set_yscale('log')
 ax2.set_xscale('log')
 ax2.set_yscale('log')
 lns = small + large
 labs = [l.get_label() for l in lns]
-ax1.legend(lns, labs, loc=4)
+ax1.legend(lns, labs, loc=0)
 plt.show()
 
 
