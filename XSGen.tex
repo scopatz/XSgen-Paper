@@ -28,6 +28,7 @@
 \onehalfspacing
 
 \section{Introduction}
+
 Reactor simulation is an essential part of nuclear fuel cycle modeling. Modeling strategies
 may be categorized in three ways: low, medium, and high fidelity. Each of these modeling
 paradigms provides different benefits to a fuel cycle simulation but comes with tradeoffs to
@@ -36,8 +37,8 @@ either accuracy, computational effort, or both.
 Low fidelity models are those models that include limited to no physical computations at run time.
 This class of modeling works best for systems that have fixed behaviors. For example, a reactor
 during steady state operation may be modeled sufficiently accurately with a low fidelity model.
-Such models are often refered to as \emph{recipe reactors}. A recipe represents a predefined
-nuclide vector. Recipe reactors use fixed pairs of input and output recipes to
+Such models are often refered to as \emph{recipe reactors}\citeme. A recipe represents a predefined
+composition. Recipe reactors use fixed pairs of input and output recipes to
 match fresh and spent
 fuel respectively. This lookup table strategy is a computationally efficient mechanism to
 represent reactor operation. Alternatively, low fidelity models may include interpolation
@@ -59,7 +60,7 @@ calculations. Examples of medium fidelity reactor models are CLASS\cite{class}
 and Bright-lite\cite{brightlite,flanagan}.
 
 High fidelity models are performed using neutronics calculations, Bateman
-equation\cite{bateman1910, bateman} solvers, or other coupled multiphysics algorithms. These models tend
+equation solvers\cite{bateman1910, bateman}, or other coupled multiphysics algorithms. These models tend
 to require information about on the complete reactor design in order to specify and execute.
 Additionally, due to their higher accuracy, these models require a proportionally heavy amount
 of computation to complete. An example of a high fidelity reactor model is the
@@ -73,8 +74,8 @@ determine the behavior of the reactor. It also includes optional physics behavio
 disadvantage factors, batch physics, and fuel blending. Alternitavely, CLASS uses a set of
 reactor input and output recipes and recursive neural networks\cite{classneural} to dynamically determine
 reactor behavior. To understand how these different modeling choices impact a fuel cycle
-scenario it is important for the models to have same fundemental information basis.
-For example, when comparing medium fidelity reactor models, one-group cross sections
+scenario, it is important for the models to have same fundemental information basis.
+For example, when comparing medium fidelity reactor models, the one-group cross sections
 must be the same.
 
 At present, each medium fidelity model uses its own method for generating input datasets.
@@ -90,12 +91,12 @@ in the cooresponding BSD-licensed XSgen software package.
 
 XSgen couples a neutron transport code with a depletion solver to automate the generation of
 medium fidelity reactor model datasets. XSgen uses OpenMC\cite{openmc} as neutron transport.
-A one thousand group logarithimically spaced flux is extracted from OpenMC. This flux is
+A one thousand group, logarithimically spaced flux is extracted from OpenMC. This flux is
 measured in the fuel region of supplied reactor geometry. This flux is fed into a cross
-section collapser to generate one-group or multi-group cross sections. This operation is
-performed by PyNE\cite{pyne}, the nuclear engineering toolkit. Finally, either the
+section collapser to generate one-group or multi-group cross sections. This collapse is
+performed by PyNE\cite{pyne}. Finally, either the
 one-group or multi-group cross sections are coupled to a depletion solver. Currently, this
-role is satisfied by ORIGEN v2.2\cite{origen2}, which requires one-group cross-sections.
+role is satisfied by ORIGEN v2.2\cite{origen2}, which requires one-group cross sections.
 
 The XSgen method is capable of providing all of the inputs that medium fidelity reactor models
 may use: time dependent one- or multi-group cross sections, transmutation matricies,
@@ -110,12 +111,11 @@ simulate a fuel bundle well past its effective lifetime in the core. The data ge
 XSgen run of this type contains enough information to build out an estimate of core composition
 at discharge using reactor batch physics discussed later below.
 
-The following 
-
-\section{XSgen Workflow}
+\section{The XSgen Workflow}
 \label{sec-workflow}
+
 The main line of the XSgen workflow couples three primary tools: neutron transport via OpenMC,
-cross section collapse via PyNE, and depletion ORIGEN v2.2. The first step is the simulation
+cross section collapse via PyNE, and depletion via ORIGEN v2.2. The first step is the simulation
 of the reactor core using a Monte Carlo neutron transport simulation. The primary result of
 this is a highly resolved flux spectrum. This spectrum is then collapsed with a standard
 cross section database and converted into a suite of one-group cross sections for a reactor
@@ -157,6 +157,7 @@ step specified is reached. The XSgen workflow is displayed in Figure \ref{fig:fl
 \end{figure}
 
 \subsection{Neutron Transport via OpenMC}
+
 OpenMC was used as the reference neutron transport calculator for modeling reactors.
 It was chosen due to its availablity (it is BSD licensed), its ability to quickly perform
 reactor oriented calculations\cite{serpentvmonte}, and it capability to compute scattering
@@ -170,11 +171,12 @@ XSgen also provides standard templates representing pressurized water reactor (P
 and fast reactor (FR) lattices. More standard templates may be added to XSgen in the future.
 
 \subsection{Cross Section Collapse via PyNE}
+
 PyNE is used to perform the group collapse
 from cross section databases down to the one-group or multi-group cross sections.
 PyNE is capable of reading in cross section data from both ACE\cite{ace} and ENDF\cite{endf}
 datasets. It is able to synthesize cross section data - that may exist with
-many different energy grids - down to a single, standard energy group structure specified
+many different energy grids - down to a single, standard energy group structure as specified
 by the user.
 
 The algorithm PyNE uses for collaspsing cross sections is tailored to efficiently collapsing
@@ -235,7 +237,7 @@ groupwise cross section for $i^\mathrm{th}$ nuclide and the $r^\mathrm{th}$ reac
                                    \left(E_{p+1}-E_{p}\right)}
                                   {E_g-E_{g+1}}
 \end{equation}
-Equation \ref{pointwise-collapse} amounts to a trapezoidal integration weighted by the
+Equation \ref{pointwise-collapse} represents to a trapezoidal integration weighted by the
 energy width of the group. From here, one-group cross sections may be obtained using the PEM
 matrix from above. Note that in Equation \ref{pointwise-pem}, $\phi$ represents the total
 flux ($\phi=\sum\phi_g$).
@@ -249,7 +251,7 @@ elementwise multplication of the group constants and the group fluxes.
 This process is repeated for all nuclides and reaction channels. The resultant one-group
 cross section dataset is used to construct a custom ORIGEN v2.2 TAPE9 file\cite{origen2}.
 
-PyNE also enables the user to incorperate self-shielding effects \cite{bonderanko} into the cross sections
+PyNE also enables the user to incorperate self-shielding effects \cite{bondarenko} into the cross sections
 computed for XSgen. It does so by building an energy dependent function of weights for each
 nuclide. These weights scale the one-group cross section depending on the density of the
 nuclide. The more concentrated a nuclide is within a material composition, the lower the
@@ -277,16 +279,16 @@ Equation \ref{pointwise-flux} \cite{spectrum}.
 \phi =
 \begin{cases}
     \frac{2\pi\sqrt{2E*1e6}}{(\pi kT)^{3/2}}e^{\frac{-E*1e6}{kT}} & : E\leq 0.155e-6 \\
-    \frac{1}{\sqrt{2E*1e6}} + 0.453e^{-1.036E}*\sinh{\sqrt{2.29E}} & : E > 0.155e-6 \\
+    \frac{1}{\sqrt{2E*1e6}} + 0.453e^{-1.036E}\cdot\sinh{\sqrt{2.29E}} & : E > 0.155e-6 \\
 \end{cases}
 \end{equation}
-Here, $k$ is the Boltzman constant ($\frac{eV}{K}$), $T$ is the temperature (K),
-and E is the energy (MeV). Equation \ref{pointwise-flux} is displayed in
+Here, $k$ is the Boltzman constant ($\frac{eV}{K}$), $T$ is the temperature [K],
+and E is the energy [MeV]. Equation \ref{pointwise-flux} is displayed in
 Figure \ref{fig:therm}.
 \begin{figure}[h]
   \center
   \includegraphics[scale=0.6]{thermspec.png}
-  \caption{Pointwise flux for PWR the caclulation of self-shielding weights}
+  \caption{Representative pointwise flux for PWR the caclulation of self-shielding weights}
   \label{fig:therm}
 \end{figure}
 
@@ -298,13 +300,13 @@ in the fuel will charge as burnup increases, invalidating any previously obtaine
 Finally these weights are applied to equation \ref{pointwise-pem}.
 \begin{equation}
 \label{ssww}
-\sigma_{r}^i=\frac{P \cdot (\overrightarrow{\sigma_{r,g}^i \phi_g \omega_g^i})}{\phi}
+\sigma_{r}^i=\frac{P \cdot (\overrightarrow{\omega_g^i\sigma_{r,g}^i \phi_g})}{\phi}
 \end{equation}
 
 In this case $\phi$ is also calculated using the weights. 
 \begin{equation}
 \label{phiw}
-\phi=\sum\phi_g * w_g^i
+\phi=\sum\phi_g \cdot \omega_g^i
 \end{equation}
 
 The effects of self shielding on U-235 inside of a fuel pellet man be seen in
@@ -319,13 +321,14 @@ necessary to include - for one resonance cross sections and low energy capture c
 
 \subsection{Depletion via ORIGEN v2.2}
 \label{sec:origen}
+
 Once a TAPE9 file (the cross section format of ORIGEN v2.2) has been constructed, it is
 used to perform two types of burnup operations. The first is performed on the fuel and
 includes the entire fuel material composition. Once this is done the material at the
 end of the fuel burn is passed back to OpenMC to start the next XSgen time step iteration.
 
 The second type of depletion calculation is used to build a transmutation dataset for a
-specific nuclide. These runs take one kilogram of a pure, intial isotope as the input to
+specific nuclide. These runs take one kilogram of a pure, intial nuclide as the input to
 ORIGEN. At the end of the depeltion, the burnup, neutron production rate, neutron
 destruction rate, and transmutation matrix are all recorded. The nuclides of interest
 for which these parameters are tracked are chosen ahead of time by the XSgen user.
@@ -333,6 +336,7 @@ This nuclide set represents which nuclides are admissable as fresh fuel for the 
 fidelity reactor model.
 
 \subsection{XSgen as a Recipe Generator}
+
 XSgen may be used to construct recipes for low fidelity reactor models. Recipes creation
 requires simulating the full reactor lifetime. One technique is to use a high fidelity
 model to accurately model the burnup and transmutation of a reactor core from loading to
@@ -359,7 +363,8 @@ criticality over a cycle. Specifically, it does not provide valid recipes for ac
 driven systems or breeder reactors.
 
 \section{Cross Section Generation Results}
-To test the capable of XSgen to generate cross sections a test case was run emulating a light water reactor (LWR). 
+
+To test the capability of XSgen to generate cross sections, a test case was run emulating a light water reactor (LWR). 
 Figures \ref{fig:u235xs} and \ref{fig:u238xs} show cross section behavior results
 from running XSgen for the LWR using the input parameters found in
 Table \ref{tab:xsgenstats1}. The fresh fuel used was 3.5\% enriched uranium oxide (UOX).
@@ -370,10 +375,8 @@ The number of energy groups used for this analysis was 1000, log-uniformly space
 \centering
 \caption{Reactor Input Parameters for XSgen Comparisons}
 \label{tab:xsgenstats1}
-\begin{tabular}{|ll|}
-\hline
+\begin{tabular}{ll}
 Input & Value \\
-\hline
 Fuel Cell Radius [cm] & 0.410 \\
 Void Cell Radius [cm] & 0.4185 \\
 Clad Cell Radius [cm] & 0.475 \\
@@ -382,24 +385,23 @@ Unit Cell Height [cm] & 10.0 \\
 Fuel Density [g/cc] & 10.7 \\
 Clad Density [g/cc] & 5.87 \\
 Coolant Density [g/cc] & 0.73 \\
-\hline
 \end{tabular}
 \end{table}
 
 \begin{figure}
 \caption{Cross Section Behavior of U235 in 3.5\% enriched LWR.
-         The U235 is subjected to a constant flux of $3x10^14$n/s/$cm^2$.}
+         The U235 is subjected to a constant flux of $3\times10^{14}$n/s/$cm^2$.}
 \includegraphics[scale=0.8]{U235xs.png}
 \label{fig:u235xs}
 \end{figure}
 
 \begin{figure}
-\caption{Cross Section Behavior of U238 in 3.5\% enriched LWR. The U238 is subjected to a constant flux of $3x10^14$n/s/$cm^2$.}
+\caption{Cross Section Behavior of U238 in 3.5\% enriched LWR. The U238 is subjected to a constant flux of $3\times10^{14}$n/s/$cm^2$.}
 \includegraphics[scale=0.8]{U238xs.png}
 \label{fig:u238xs}
 \end{figure}
 
-Figures \ref{fig:U235xs} \& \ref{fig:U238xs} show how the the fission and (n, $\gamma$)
+Figures \ref{fig:u235xs} \& \ref{fig:u238xs} show how the the fission and (n, $\gamma$)
 cross sections change slowly over the course of operating the reactor. This is to be
 expected as the flux and number densities of U-235 and U-238 change. 
 This behavior is consistent with the expected behavior of cross sections within an LWR.
@@ -414,11 +416,12 @@ structures; namely 32 \& log-uniformly spaced groups.
   \caption{Fluxes generated by OpenMC for a light water reactor using 32 and 1000 group energy structures.}
   \label{fig:32g}
 \end{figure}
-Figure \ref{fig:32g} demonstrated the expected behavior between the two group structures.
+Figure \ref{fig:32g} demonstrated the thermal spectrum behavior of the two group structures.
 The larger, 1000-group structure manages to catch the effects of stronger resonance groups
 as well as providing better detail than the lower, 32-group structures.
 
 \section{LWR Benchmarking Cases}
+
 XSgen by itself can not directly be verified against operating reactor systems because it
 only generates datasets for use by medium fidelity reactor models.
 Thus, XSgen will be benchmarked in conjunction with Bright-lite to produce burnups and
@@ -432,7 +435,13 @@ Specifically, cases at 3.0\%, 3.5\%, and 4.0\% U-235 enrichment where benchmarke
 Three batch cores were be assumed for all the enrichment test cases.
 
 The benchmarks presented in Tables \ref{tab:30}-\ref{tab:40}
-all compare used fuel composition. 
+all compare used fuel composition using mass fractions and percent difference.For this 
+calculation VISION is considered the accepted set of values. 
+ 
+\begin{equation}
+\label{percentdiff}
+\% Difference = \frac{value_{accepted} - value_{tested}}{value_{accepted}}\times100
+\end{equation}
 
 \begin{table}[!htb]
 \centering
@@ -441,19 +450,17 @@ all compare used fuel composition.
 \label{tab:30}
 \vspace{0.5em}
 \begin{tabular}{cccc}
-Nuclide  VISION & Bright-lite & Difference \\
-\hline
-U235  & 6.75E-3 & 6.70E-3 & -0.78\\
-Pu238 & 1.23E-4 & 1.27E-4 & 3.01\\
-Pu239 & 5.15E-3 & 5.25E-3 & 1.95\\
-Pu240 & 2.38E-3 & 2.40E-3 & 0.97\\
-Pu241 & 1.30E-3 & 1.35E-3 & 3.69\\
-Pu242 & 5.43E-4 & 5.48E-4 & 0.88\\
-Am241 & 3.56E-5 & 3.86E-5 & 8.81\\
-Am243 & 9.38E-5 & 9.01E-5 & -3.94\\
-Cm242 & 1.38E-5 & 1.34E-5 & -3.19\\
-Cm244 & 2.79E-5 & 2.57E-5 & -7.94\\
-\hline
+Nuclide &  VISION & Bright-lite & \% Difference \\
+U235  & 6.75E-3 & 6.70E-3 & -0.78\%\\
+Pu238 & 1.23E-4 & 1.27E-4 & 3.01\%\\
+Pu239 & 5.15E-3 & 5.25E-3 & 1.95\%\\
+Pu240 & 2.38E-3 & 2.40E-3 & 0.97\%\\
+Pu241 & 1.30E-3 & 1.35E-3 & 3.69\%\\
+Pu242 & 5.43E-4 & 5.48E-4 & 0.88\%\\
+Am241 & 3.56E-5 & 3.86E-5 & 8.81\%\\
+Am243 & 9.38E-5 & 9.01E-5 & -3.94\%\\
+Cm242 & 1.38E-5 & 1.34E-5 & -3.19\%\\
+Cm244 & 2.79E-5 & 2.57E-5 & -7.94\%\\
 \end{tabular}
 \end{table}
 
@@ -464,19 +471,17 @@ Cm244 & 2.79E-5 & 2.57E-5 & -7.94\\
 \label{tab:35}
 \vspace{0.5em}
 \begin{tabular}{cccc}
-Nuclide  VISION & Bright-lite & Difference \\
-\hline
-U235  & 6.80E-3 & 6.71E-3 & -1.30\\
-Pu238 & 1.85E-4 & 1.86E-4 & -0.41\\
-Pu239 & 5.41E-3 & 5.45E-3 & 0.66\\
-Pu240 & 2.60E-3 & 2.61E-3 & 0.25 \\
-Pu241 & 1.48E-3 & 1.52E-3 & 2.74\\
-Pu242 & 6.92E-4 & 6.93E-4 & 0.10 \\
-Am241 & 4.59E-5 & 5.17E-5 & 12.60\\
-Am243 & 1.37E- & 1.26E-4 & -7.474\\
-Cm242 & 1.88E-5 & 1.79E-5 & -4.91\\
-Cm244 & 4.38E-5 & 4.54E-5 & -6.06\\
-\hline
+Nuclide &  VISION & Bright-lite & \% Difference \\
+U235  & 6.80E-3 & 6.71E-3 & -1.30\%\\
+Pu238 & 1.85E-4 & 1.86E-4 & -0.41\%\\
+Pu239 & 5.41E-3 & 5.45E-3 & 0.66\%\\
+Pu240 & 2.60E-3 & 2.61E-3 & 0.25 \%\\
+Pu241 & 1.48E-3 & 1.52E-3 & 2.74\%\\
+Pu242 & 6.92E-4 & 6.93E-4 & 0.10 \%\\
+Am241 & 4.59E-5 & 5.17E-5 & 12.60\%\\
+Am243 & 1.37E- & 1.26E-4 & -7.474\%\\
+Cm242 & 1.88E-5 & 1.79E-5 & -4.91\%\\
+Cm244 & 4.38E-5 & 4.54E-5 & -6.06\%\\
 \end{tabular}
 \end{table}
 
@@ -487,26 +492,24 @@ Cm244 & 4.38E-5 & 4.54E-5 & -6.06\\
 \label{tab:40}
 \vspace{0.5em}
 \begin{tabular}{cccc}
-Nuclide  VISION & Bright-lite & Difference \\
-\hline
-U235 & 6.95E-3 & 6.91E-3 & -0.562\\
-Pu238 & 2.52E-4 & 2.55E-4 & 1.35\\
-Pu239 & 5.64E-3 & 5.67E-3 & 0.57\\
-Pu240 & 2.78E-3 & 2.79E-3 & 0.4\\
-Pu241 & 1.62E-3  & 1.62E-3 & -0.02\\
-Pu242 & 8.17E-4  & 8.19E-4 & -0.28\\
-Am241 & 5.55E-5 & 6.04E-5 & 8.79\\
-Am243 & 1.76E-4 & 1.74E-4 & -1.40\\
-Cm242 & 2.33E-5 & 2.31E-5 & -0.83\\
-Cm244 & 7.06E-5 & 7.00E-5 & -0.90\\
-\hline
+Nuclide & VISION & Bright-lite & \% Difference \\
+U235 & 6.95E-3 & 6.91E-3 & -0.562\%\\
+Pu238 & 2.52E-4 & 2.55E-4 & 1.35\%\\
+Pu239 & 5.64E-3 & 5.67E-3 & 0.57\%\\
+Pu240 & 2.78E-3 & 2.79E-3 & 0.4\%\\
+Pu241 & 1.62E-3  & 1.62E-3 & -0.02\%\\
+Pu242 & 8.17E-4  & 8.19E-4 & -0.28\%\\
+Am241 & 5.55E-5 & 6.04E-5 & 8.79\%\\
+Am243 & 1.76E-4 & 1.74E-4 & -1.40\%\\
+Cm242 & 2.33E-5 & 2.31E-5 & -0.83\%\\
+Cm244 & 7.06E-5 & 7.00E-5 & -0.90\%\\
 \end{tabular}
 \end{table}
 
- Tables \ref{tab:30}-\ref{tab:40} shows a very strong agreement between VISION and Bright-light
-results using datasets created from light water reactors designed to these particular
+Tables \ref{tab:30}-\ref{tab:40} shows a very strong agreement between VISION and Bright-light
+results using datasets created by XSgen from light water reactor designs using these particular
 enrichments. Bright-light has been benchmarked against VISION previously using other datasets
-\cite{brightlite}. The previously benchmarked Bright-lite used stocked Origen2.2\cite{origen2} libraries. This shows that
+\cite{brightlite}. The previously benchmarked Bright-lite used stocked Origen2.2 libraries\cite{origen2}. This shows that
 XSgen generated datasets allow for Bright-lite to match VISION to a 5\% tolence for a
 majority of nuclidess. Those that exhibit the greatest deviations are high order transuranics.
 
@@ -518,6 +521,7 @@ Am241 is too low, it can never transmute into Am242 and Am243. This in turn lead
 relative sparsity of curium isotopes.
 
 \section{LWR Startup Behavior Benchmarking}
+
 The Bright-lite model generated by XSgen was additionally tested against a set of
 Nuclear Enegy Agency (NEA) results\cite{nea}. These results demonstrate the start up behavior
 of the same reaction using two different fuel enrichments.
@@ -532,8 +536,8 @@ input datasets.
 \centering
 \caption{NEA core discharge data for a 3.1\% enriched light water reactor with startup behavior.}
 \label{tab:b}
-\begin{tabular}{lcccc}
-Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
+\begin{tabular}{lllll}
+Batch & Burnup (MWd/kg) & U235 (w\%) & Fissile Pu (w\%) & Total Pu(w\%) \\
 1 & 12.04 & 0.64 & 0.464 & 0.633 \\
 2 & 23.86 & 0.76 & 0.6 & 0.818 \\
 3 & 31.75 & 0.8 & 0.677 & 0.921 \\
@@ -546,8 +550,8 @@ Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
 \centering
 \caption{The startup values and percent difference from the NEA data for the XSgen/Bright-lite reactor system.}
 \label{tab:c}
-\begin{tabular}{c cc | cc | cc | cc}
- & \multicolumn{2}{p{1cm}}{Burnup (MWd/kgIHM)} & \multicolumn{2}{c}{U235 (\%)} & \multicolumn{2}{c}{Fissile Pu (\%)} & \multicolumn{2}{c}{Total Pu (\%)} \\
+\begin{tabular}{l ll ll ll ll}
+ & \multicolumn{2}{p{1cm}}{Burnup (MWd/kgIHM)} & \multicolumn{2}{c}{U235 (w\%)} & \multicolumn{2}{c}{Fissile Pu (w\%)} & \multicolumn{2}{c}{Total Pu (w\%)} \\
 Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
 1 & 13.570 & 12.754 & 0.656 & 2.50 & 0.550 & 18.737 & 0.680 & 7.541 \\
 2 & 22.040 & -7.628 & 0.723 & -4.868 & 0.641 & 6.919 & 0.835 & 2.189 \\
@@ -558,7 +562,7 @@ Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
 \end{tabular}
 \end{table}
 
-The results of the start up nuclide loading can be seen in Table \ref{tab:c}.
+The results of the startup nuclide loading can be seen in Table \ref{tab:c}.
 The first discrepency in these results is the amount of plutonium generated
 within the first batch is significantly higher within Bright-lite than in the NEA data.
 This trend only continues for the first two cycles before settling out. In the NEA data, the start up batches 
@@ -577,7 +581,7 @@ spread more evenly, Bright-lite simulates them as being the inner most section o
 \caption{NEA data for a 3.6\% enriched light water reactor start up behavior.}
 \label{tab:d}
 \begin{tabular}{lllll}
-Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
+Batch & Burnup (MWd/kg) & U235 (w\%) & Fissile Pu (w\%) & Total Pu(w\%) \\
 1 & 13.9 & 0.840 & 0.474 & 0.629 \\
 2 & 22.67 & 0.721 & 0.642 & 0.892 \\
 3 & 32.36 & 0.647 & 0.716 & 1.039 \\
@@ -592,8 +596,8 @@ Batch & Burnup (MWd/kg) & U235 (\%) & Fissile Pu (\%) & Total Pu(\%) \\
 \centering
 \caption{XSgen / Bright-lite data for the 3.6\% enriched light water reactor start up behavior.}
 \label{tab:e}
-\begin{tabular}{l ll | ll | ll | ll}
- & \multicolumn{2}{l}{Burnup (MWd/kgIHM)} & \multicolumn{2}{l}{U235 (\%)} & \multicolumn{2}{l}{Fissile Pu (\%)} & \multicolumn{2}{l}{Total Pu (\%)} \\
+\begin{tabular}{l ll  ll  ll  ll}
+ & \multicolumn{2}{p{1cm}}{Burnup (MWd/kgIHM)} & \multicolumn{2}{c}{U235 (w\%)} & \multicolumn{2}{c}{Fissile Pu (w\%)} & \multicolumn{2}{c}{Total Pu (w\%)} \\
 Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
 1 & 13.37 & -3.84 & 0.930 & 10.77 & 0.62 & 30.43 & 0.78 & 23.53 \\
 2 & 22.69 & 0.07 & 0.82 & 13.02 & 0.72 & 12.81 & 0.96 & 7.49 \\
@@ -606,7 +610,7 @@ Batch & Value & \%Diff & Value & \%Diff & Value & \%Diff & Value & \%Diff \\
 \end{table}
 
 Table \ref{tab:d} and Table \ref{tab:e} are analogous to Table \ref{tab:b} and Table \ref{tab:c}
-for the 3.6\% U-235 enriched LWR case. Again, a similar trend is visible in this case with the
+for the 3.6\% U235 enriched LWR case. Again, a similar trend is visible in this case with the
 exception that the equilibrium results for the total amount of plutonium within the
 reactor is 9.2\% lower in the Bright-lite model. The amount of fissile plutonium at equalibrium is also lower,
 but within 5\%. The lower amount of fissile plutonium leads
@@ -624,7 +628,7 @@ the modeling of advanced reactor types with minimal user effort.
 
 \begin{table}[!htb]
 \centering
-\caption{Comparison of VISION and Bright-lite result from a single pass MOX reactor.}
+\caption{Comparison of VISION and Bright-lite output from a single pass MOX reactor.}
 \label{tab:g}
 \begin{tabular}{lllll}
 Nuclide & Input Composition & Vision & Bright-lite & Difference(\%) \\
@@ -638,9 +642,9 @@ Pu240 & 2.70E-2 & 2.42E-2 & 2.54E-2 & 5.0\\
 Pu241 & 1.17E-2 & 1.31E-2 & 1.27E-2 & -3.3\\
 Pu242 & 8.00E-3 & 8.90E-3 & 8.68E-3 & -2.6\\
 Am241 & 1.18E-3 & 1.72E-3 & 1.60E-3 & -7.2\\
-Am243 & - & 1.96E-3 & 1.83E-3 & -6.6\\
-Cm242 & - & 2.62E-4 & 2.46E-4 & -6.4\\
-CM244 & - & 1.03E-3 & 9.84E-4 & -4.4
+Am243 & 0.0 & 1.96E-3 & 1.83E-3 & -6.6\\
+Cm242 & 0.0 & 2.62E-4 & 2.46E-4 & -6.4\\
+CM244 & 0.0 & 1.03E-3 & 9.84E-4 & -4.4
 \end{tabular}
 \end{table}
 
@@ -650,8 +654,9 @@ are quite similar to the output recipe of VISION. For most actinides listed, the
 is less than 5\%, even for higher order species such as the curium isotopes.
 The differences with respect to some of the higher order actinides (Am241 and higher) most
 likely stem from the relatively high amount of Pu240. This suggests that Pu240 neutron capture
-cross section is lower in Bright-lite. This could arrise from a difference in the cross
-section data sets used or in methodology (perhaphs self-shielding is treated differently).
+cross section is lower in Bright-lite. A lower cross section could arrise from a difference in the cross
+section data sets used or in methodology; the pointwise flux used in the self shielding calculation could
+be different, the cross section data could be different, etc.
 The low Pu240 capture cross section thus lowers the equilibrium concentration of Pu241 and
 nuclides isotopes that derive from it.
 
@@ -665,6 +670,7 @@ true MOX reactor used to formulate the VISION recipes, the resultant composition
 up well enough for the important fuel cycle nuclides.
 
 \section{Recipe Reactor Generation}
+
 As discussed in \S\ref{sec-workflow}, XSgen may be used to create recipe reactors.
 This section displays a comparison between VISION and XSgen recipe reactors. These LWRs accept
 a 3.2\% U235 enriched fresh fuel. The XSgen model was constructed with reactor design
@@ -674,10 +680,8 @@ information found in Table \ref{tab:xsgenstats}.
 \centering
 \caption{Specification forthe XSgen 33 MWd/kgIHM Burnup LWR.}
 \label{tab:xsgenstats}
-\begin{tabular}{|ll|}
-\hline
+\begin{tabular}{ll}
 Input & Value \\
-\hline
 Fuel Cell Radius [cm] & 0.410 \\
 Void Cell Radius [cm] & 0.4185 \\
 clad Cell Radius [cm] & 0.475 \\
@@ -686,7 +690,6 @@ Unit Cell Height [cm] & 10.0 \\
 Fuel Density [g/cc] & 10.7 \\
 Clad Density [g/cc] & 5.87 \\
 Coolant Density [g/cc] & 0.73 \\
-\hline
 \end{tabular}
 \end{table}
 
@@ -697,10 +700,8 @@ cooresponding XSgen reactor discharge recipes.
 \centering
 \caption{Comparison of VISION and XSgen for the generation of a 33 MWd/kgIHM Burnup.}
 \label{tab:recipe}
-\begin{tabular}{|l|lll|}
-\hline
+\begin{tabular}{llll}
 Isotope & Vision & XSgen & Difference(\%) \\
-\hline
 U235 & 8.06E-03 & 7.84E-03 & -2.85 \\
 U238 & 9.44E-01 & 9.67E-01 & 2.36 \\
 Pu238 & 1.09E-04 & 1.01E-04 & -7.80 \\
@@ -712,18 +713,23 @@ Am241 & 2.98E-05 & 2.76E-05 & -7.97 \\
 Am243 & 7.90E-05 & 7.23E-05 & -9.31 \\
 Cm242 & 1.17E-05 & 1.07E-05 & -9.48 \\
 Cm244 & 2.22E-05 & 2.11E-05 & -5.11 \\
-\hline
 \end{tabular}
 \end{table}
 
 The results in Table \ref{tab:recipe} show that XSgen is with 10\% error on all output
 compositions for this reactor design. A possible cause for this differnce is the
-method used for extrapolating the data for a multi-batch core from a single batch core.
-Additionally, the design of the VISION reactor is unknown, similar to the MOX case presented
-in \S\ref{sec-mox-benchmark}. This implies that the reactor modeled with XSgen likely does not
-perfectly match the dimensions of the reactor model used to create the VISION recipes.
+method used for extrapolating the data for a multi-batch core from a single batch core using
+the linear reactivity model. Additionally, the design of the VISION reactor is unknown, similar to the MOX case presented
+in \S\ref{sec-mox-benchmark}. The specifications - geometry, material densities, temperature, etc - used for the VISION reactor
+are unknown in this case. Output isotopics will vary with respect to those specifications mentioned above. Therefore while
+the two cases share a common enrichment and burnup, their exact output compositions will vary. 
+
+This result can be used as a starting point to further improve XSgen's recipe reactor generation capabilities.A more detailed 
+description of the VISION reactor is required to improve upon these results within XSgen. Additionally, alternative methods 
+beyond the linear reactivity model\cite{linear} may provide future improvements.
 
 \section{Conclusion}
+
 The work of nuclear reactor models is to provide designers and researchers with insight
 into the behavior of reactors, and by extension nuclear fuel cycles. Comparisons between
 these models is important to understanding how the choice of model might impact the
@@ -737,7 +743,7 @@ researchers to understand how different reactor models affect the results of fue
 Additionally, XSgen provides a method for automating the generation of reactor types for
 medium fidelity models. The work here linking XSgen to the Bright-lite reactor model shows
 that XSgen can be used to expand the set of reactor types and reactor designs
-(i.e. varied burnups, enrichment, or core structure) that Bright-lite has access to.
+(i.e. varied burnups, enrichment, or core structure) that Bright-lite can represent.
 Through this coupling, Bright-lite can be used to quickly examine fuel cycles with new or
 interesting reactor technologies.
 
