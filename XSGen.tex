@@ -22,7 +22,7 @@
 
 \begin{document}
 \title{XSgen: A Cross Section Generation Methodology}
-\date{January, 25, 2017}
+\date{\today}
 \author{Flanagan, Robert \and Scopatz, Anthony}
 \maketitle
 \onehalfspacing
@@ -33,13 +33,13 @@ Reactor simulation is an essential part of nuclear fuel cycle modeling. Modeling
 may be categorized in three ways: low, medium, and high fidelity. Each of these modeling
 paradigms provides different benefits to a fuel cycle simulation but comes with tradeoffs to
 either accuracy, computational effort, or both. The methodology demonstrated in this work, XSgen, 
-is a new method for automating the generation of datasets for medium and low fidelity models. 
+is a new method for automating the generation of cross section datasets for medium and low fidelity models. 
 These datasets use fully described data, allowing users to compare different models under known
 conditions and remove any ambiguity that might stem from unknown reactor specification values in a 
-given dataset. This work is a demonstration of the methodology used and focuses on how this methodology
+given dataset. This work is a demonstration of the XSgen methodology and focuses on how this methodology
 impacts the cross sections derived from it. 
 
-Accurately generately cross section datasets used in fuel cycle simulation allows for the minimization
+Accurately generately cross section datasets used in fuel cycle simulation allow for the minimization
 of error bars of mass flows between nuclear facilities, whether they use low or medium fidelity models.
 While the work in this discussion does not address, in depth, the impact of XSgen on nuclear fuel cycles 
 it is important to mention that this work sets up the basis for using XSgen as a tool in fuel cycle 
@@ -73,7 +73,7 @@ and Bright-lite\cite{brightlite,flanagan}.
 
 High fidelity models are constructed using neutronics calculations, Bateman
 equation solvers\cite{bateman1910, bateman}, or other coupled multiphysics algorithms. These models tend
-to require information on the complete reactor design to be specified and executed.
+to require information on the complete reactor design in order to be executed.
 Additionally, due to their higher accuracy, these models require a proportionally heavier amount
 of computation. An example of a high fidelity reactor model is the
 MCNP\cite{mcnp5monte} burn card which couples Monte Carlo neutron transport with a depletion
@@ -87,15 +87,14 @@ disadvantage factors, batch physics, and fuel blending. Alternitavely, CLASS use
 reactor input and output recipes and recursive neural networks\cite{classneural} to dynamically determine
 reactor behavior. To understand how these different modeling choices impact a fuel cycle
 scenario, it is important for the models to have same fundemental information basis.
-For example, when comparing medium fidelity reactor models, the one-group cross sections
-must be the same.
+For example, the one-group cross sections must be the same.
 
 At present, each medium fidelity model uses its own method for generating input datasets.
 This implies that any methodlogical comparison between would be (at least partially) invalid
 because each model starts with distinct inputs. Thus, any difference in their outputs
 could be attributable to differences in inputs and any similarities in outputs could be
 happenstance. Therefore, only an analysis that uses the same baseline datasets
-is usablefor teasing out differnces that arrise purely from methodology.
+is valid for teasing out differnces that arrise purely from methodology.
 
 This paper discusses a method which generates datasets usable by medium fidelity reactor models.
 The authors term this method XSgen and a concrete implementation of this method is available
@@ -103,7 +102,8 @@ in the cooresponding BSD-licensed XSgen software package\cite{xsgen}.
 
 XSgen couples a neutron transport code with a depletion solver to automate the generation of
 medium fidelity reactor model datasets. XSgen uses OpenMC\cite{openmc} as neutron transport.
-A one thousand group, logarithimically spaced flux is extracted from OpenMC. This flux is
+A one thousand group, logarithimically spaced flux is extracted from OpenMC. The lower bound for 
+this group structure being 1E-9MeV and the upper bound set to 10MeV. This flux is
 measured in the fuel region of supplied reactor geometry. This flux is fed into a cross
 section collapser to generate one-group or multi-group cross sections. This collapse is
 performed by PyNE\cite{pyne}. Finally, either the
@@ -113,7 +113,7 @@ role is satisfied by ORIGEN v2.2\cite{origen2}, which requires one-group cross s
 The XSgen method is capable of providing all of the inputs that medium fidelity reactor models
 may use: time dependent one- or multi-group cross sections, transmutation matricies,
 burnup rates, neutron production rates, and destruction rates.
-XSgen stores the specified data which it generates a single database.
+XSgen stores the data it generates in a single database.
 From here, medium fidelity reactor models are able extract the information they need to
 derive a new dataset for use in a fuel cycle simulation.
 
@@ -123,7 +123,7 @@ simulate a fuel bundle well past its effective lifetime in the core. The data ge
 XSgen run of this type contains enough information to build out an estimate of core composition
 at discharge using reactor batch physics discussed in section \S\ref{sec:recipe}.
 
-In the following sections will demonstrate the workflow and capabilities of XSgen. The workflow demonstrated in section 
+The following sections will demonstrate the workflow and capabilities of XSgen. The workflow demonstrated in section 
 \S\ref{sec-workflow} demonstrates 
 both the computational work as well as the mathematical basis. Following that is a description of the direct cross 
 section results from XSgen in section \S\ref{sec:crosssection}. Finally, XSgen is used for several verification cases with current reactor 
@@ -138,11 +138,13 @@ of the reactor core using a Monte Carlo neutron transport simulation. The primar
 this is a highly resolved flux spectrum. This spectrum is then collapsed with a standard
 cross section database and converted into a suite of one-group cross sections for a reactor
 at time step $t$ [days] after the reactor has started up. These one-group cross sections are
-then used by a depletion solver to compute the burnup[MWd], neutron production rate[n/s], neutron
+then used by a depletion solver to compute the burnup[MWd/kgIHM], neutron production rate[n/s], neutron
 destruction rate[n/s], and transmutation matrices. The value of $t$ is set by the user when XSgen
 is executed. The composition of the material at the end of the time step is then submitted
 back to the neutron transport solver as input. This process is repeated until the maximum time
-step specified is reached.
+step is reached. This type of linkage has been done in other softwares, for example LOOP\cite{loop}. However, 
+XSgen aims to take the technique further by expanding the physics in the cross section collapse, and providing 
+automatic linkage with medium fidelity models.  
 
 \begin{figure}\center\begin{tikzpicture}[node distance=2cm]
 \node (start) [startstop] {Start};
@@ -177,7 +179,7 @@ step specified is reached.
 \subsection{Neutron Transport via OpenMC}
 
 OpenMC was used as the reference neutron transport calculator for modeling reactors.
-It was chosen due to its availablity (it is BSD licensed\cite{open3bsd}, its ability to quickly perform
+It was chosen due to its availablity (it is BSD licensed\cite{open3bsd}), its ability to quickly perform
 reactor oriented calculations\cite{serpentvmonte}, and it capability to compute scattering
 kernels. Currently, XSgen only obtains the group flux values from OpenMC. It extracts
 these for each timestep.
@@ -213,7 +215,8 @@ a group structured defined by $E_h[MeV]$ bin boundaries. Likewise, $\vec{\phi_g}
 the collapsed flux with $G$ groups and $E_g[MeV]$ bin boundaries. The partial energy
 matrix $P$ is defined by the relations seen in Equation \ref{pem-relations}.
 Equation \ref{pem-relations} assumes that all energies are monotonically decreasing, namely
-that $E_{g+1} \le E_{g} \forall g\in G$ and $E_{h+1} \le E_{h} \forall h\in H$.
+that $E_{g+1} \le E_{g} \forall g\in G$ and $E_{h+1} \le E_{h} \forall h\in H$. Figure \ref{fig:bin_graph}
+demonstrates the relations shown in equation \ref(pem-relations}.
 \begin{equation}
 \label{pem-relations}
 P_{g,h} = \left\{
@@ -270,7 +273,7 @@ flux ($\phi=\sum\phi_g$).
 \sigma_{r}^i=\frac{P \cdot (\overrightarrow{\sigma_{r,g}^i \phi_g})}{\phi}
 \end{equation}
 Here $\sigma_{r}^i$ represents the one-group cross section of the $r^\mathrm{th}$ reaction
-channel for the $i^\mathrm{th}$ nuclide and $\overrightarrow{\sigma_{r,g}^i \phi_g}$ is the
+channel for the $i^\mathrm{th}$ nuclide, and $\overrightarrow{\sigma_{r,g}^i \phi_g}$ is the
 elementwise multplication of the group constants and the group fluxes.
 This process is repeated for all nuclides and reaction channels. The resultant one-group
 cross section dataset is used to construct a custom ORIGEN v2.2 TAPE9 file\cite{origen2}.
@@ -285,8 +288,8 @@ expression in Equation \ref{ssw} \cite{weights}.
 \label{ssw}
 \omega_{g}^i=\left(\frac{\sum_{i\neq j}N_i \, \sigma_{t,g}^j}{N_i}+\sigma_{t,g}^i\right)^{-1}
 \end{equation}
-In this expression, all nuclides in the fuel are included in the set of $I$, and $j$ is
-the particular nuclide in question. $N_j$ represents the number density [1/cm$^3$] of
+In this expression, $I$ represents the set of all nuclides, and $i$, and $j$ index $I$.
+ $N_j$ represents the number density [1/cm$^3$] of
 nuclide $j$, and $\sigma_{t,g}^i$ is the flux weighted total cross section of
 the $i^\mathrm{th}$ nuclide in energy bin $g$.
 
@@ -334,8 +337,8 @@ In this case $\phi$ is also calculated using the weights:
 \end{equation}
 
 The effects of self shielding on U-235 inside of a fuel pellet man be seen in
-Figure \ref{fig:index}. By inspection, the self-shield effect can be large - and thus
-necessary to include - for one resonance cross sections and low energy capture cross sections.
+Figure \ref{fig:index}. By inspection, the self-shielding effect can be large - and thus
+necessary to include - for resonance cross sections and low energy capture cross sections.
 \begin{figure}[h]
   \center
   \includegraphics[scale=0.6]{index.eps}
@@ -347,7 +350,7 @@ necessary to include - for one resonance cross sections and low energy capture c
 \label{sec:origen}
 
 Once a TAPE9 file (the cross section format of ORIGEN v2.2) has been constructed by XSgen, it is
-used to perform two types of burnup operations. The first is performed on the fuel and
+used to perform two types of burnup calculations. The first is performed on the fuel and
 includes the entire fuel material composition. Once this is done the material at the
 end of the fuel burn is passed back to OpenMC to start the next XSgen time step iteration.
 
@@ -371,7 +374,7 @@ fuel becomes subcritical it represents a single batch reactor core becoming subc
 For a single batch core, this is when refueling would be required. However, it is possible
 to predict the burnup of a multi-batch core from the burnup of a single batch core.
 Following the linear reactivity model \cite{linear}, Equation \ref{burnup-n} estimates the burnup
-$BU_n$ [MWd/kg] of an $n$-batch core based on the burnup of a single batch core.
+$BU_n$ [MWd/kg] of an $n$-batch core based on the burnup of a single batch core, as seen in equation \ref{burnup-n}.
 \begin{equation}
 \label{burnup-n}
 BU_n = \frac{2n}{n+1} \, BU_1
@@ -388,12 +391,12 @@ driven systems or breeder reactors.
 
 \section{Cross Section Generation Results}
 \label{sec:crosssection}
-To test the capability of XSgen to generate cross sections, a test case was run emulating a light water reactor (LWR). 
+To test the capability of XSgen to generate cross sections, a test case was run emulating a LWR. 
 Figures \ref{fig:u235xs} and \ref{fig:u238xs} show cross section behavior results
 from running XSgen for the LWR using the input parameters found in
 Table \ref{tab:xsgenstats1}. The fresh fuel used was 3.5\% enriched uranium oxide (UOX).
 The number of energy groups used for this analysis was 1000, log-uniformly spaced between
-0.001 eV and 10 MeV. This test was conducted using the pin-cell model method\cite{pin-cell}. 
+0.001 eV and 10 MeV. This test was conducted using the pin-cell model\cite{pin-cell}. 
 
 \begin{table}[!htb]
 \centering
@@ -455,7 +458,7 @@ any deviations within the results come from the XSgen method.
 The cases presented here represent a range of different enrichments in several LWRs.
 Results from XSgen/Bright-lite are compared to recipes provided with VISION\cite{vision}.
 Specifically, cases at 3.0\%, 3.5\%, and 4.0\% U-235 enrichment where tested.
-Three batch cores were be assumed for all the enrichment test cases.
+Three batch cores were assumed for all the enrichment test cases.
 
 The results presented in Tables \ref{tab:30}-\ref{tab:40}
 all compare used fuel composition using mass fractions and percent difference.For this 
@@ -469,7 +472,7 @@ calculation VISION is used as a reference set of values.
 \begin{table}[!htb]
 \centering
 \small
-\caption{The output nuclides at equalibrium for VISION and Bright-lite at 3.0\% enriched UOX. Difference is done as a \% difference}
+\caption{The output nuclides at equalibrium for VISION and Bright-lite at 3.0\% enriched UOX. Difference is displayed as \% difference}
 \label{tab:30}
 \vspace{0.5em}
 \begin{tabular}{cccc}
@@ -492,7 +495,7 @@ Cm244 & 2.79E-5 & 2.57E-5 & -7.94\%\\
 \begin{table}[!htb]
 \centering
 \small
-\caption{The output nuclides at equalibrium for VISION and Bright-lite at 3.5\% enriched UOX. Difference is done as a \% difference}
+\caption{The output nuclides at equalibrium for VISION and Bright-lite at 3.5\% enriched UOX. Difference is displayed as \% difference}
 \label{tab:35}
 \vspace{0.5em}
 \begin{tabular}{cccc}
@@ -515,7 +518,7 @@ Cm244 & 4.38E-5 & 4.54E-5 & -6.06\%\\
 \begin{table}[!htb]
 \centering
 \small
-\caption{The output nuclides at equalibrium for VISION and Bright-lite at 4.0\% enriched UOX. Difference is done as a \% difference}
+\caption{The output nuclides at equalibrium for VISION and Bright-lite at 4.0\% enriched UOX. Difference is displayed as \% difference}
 \label{tab:40}
 \vspace{0.5em}
 \begin{tabular}{cccc}
@@ -535,18 +538,18 @@ Cm244 & 7.06E-5 & 7.00E-5 & -0.90\%\\
 \end{tabular}
 \end{table}
 
-Tables \ref{tab:30}-\ref{tab:40} shows a very strong agreement between VISION and Bright-light
+Tables \ref{tab:30}-\ref{tab:40} shows a very strong agreement between VISION and Bright-lite
 results using datasets created by XSgen from light water reactor designs using these particular
-enrichments. Bright-light has been benchmarked against VISION previously using other datasets
-\cite{brightlite}. The previously benchmarked Bright-lite used stocked Origen2.2 libraries\cite{origen2}. This shows that
+enrichments. Bright-lite has been benchmarked against VISION previously using other datasets
+\cite{brightlite}. The previously benchmarked Bright-lite used stock Origen2.2 libraries\cite{origen2}. This shows that
 XSgen generated datasets allow for Bright-lite to match VISION to a 5\% tolence for a
 majority of nuclides. Those that exhibit the greatest deviations are high order transuranics. U238 shows the least
-deviation for the nuclides. Since the higher order actinides are generated from U238, the error in U238
+deviation for all nuclides. Since the higher order actinides are generated from U238, the error in U238
 is an indication that the overall error of the system is low. 
 
 Am241 shows the largest deviations from the VISION data. There is more Am241 in every
 case than in the VISION recipes. There is thus less of the species that are arise due to
-the presence of Am241, Am243, Cm242, and Cm244. These results can be explained by a
+the presence of Am241, namely Am243, Cm242, and Cm244. These results can be explained by a
 neutron absorption cross section error in Am241. If the neutron absorption cross section for
 Am241 is too low, it can never transmute into Am242 and Am243. This in turn leads to a
 relative sparsity of curium nuclides.
@@ -601,13 +604,12 @@ within the first batch is significantly higher within Bright-lite than in the NE
 This trend only continues for the first two cycles before settling out. In the NEA data, the start up batches 
 are placed around the core optimally, with lower enrichment fuel bundles blended throughout the 
 higher enrichment fuel bundles. In Bright-lite the fuel bundles are all grouped, meaning the center of 
-the reactor is primarily comprised of U238 (98.8\% U238) fuel bundles. The higher U238 content
-increases the production of plutonium in the first few batches, until batches reaching the center of
-the reactor have a lower U238 content and neutron poisons that reduce the U238 transmutation 
-rate. 
-The high amount of U238 in these initial batches causes a higher production rate of
+the reactor is primarily comprised of U238 (98.8\% U238) fuel bundles. Higher U238 content
+increases the production of plutonium in the first few batches. Until the batches reaching the center of
+the reactor have a lower U238 content and fission products that reduce the U238 transmutation 
+rate the nuclide vectors will not agree well. The high amount of U238 in these initial batches causes an elevated production rate of
 Pu239 over the NEA data. The NEA benchmark has these low enrichment startup batches
-spread more evenly, Bright-lite simulates them as being the inner most section of the core.
+spread more evenly. Meanwhile, Bright-lite simulates them as being the inner most section of the core.
 
 \begin{table}[!htb]
 \centering
@@ -653,13 +655,13 @@ to less build up of the high order actinides.
 
 \section{MOX Verification}
 \label{sec-mox-benchmark}
-To demonstrate the full capability XSgen requires applying the method to more advanced
+To demonstrate the full capability of XSgen the method must be applied to more advanced
 reactor types than base case LWRs. To this end, XSgen was used to generate a mixed-oxide (MOX)
 fuel library for Bright-lite. This was then applied to a single pass MOX fuel cycle scenario.
 In order to maintain a valid comparison, the input fuel composition into the Bright-lite MOX
 reactor was exactly the same as a VISION MOX reactor.
 This test demonstrates the flexibility of the combined XSgen/Bright-lite system, which enables
-the modeling of advanced reactor types with minimal user effort.
+the modeling of advanced reactor types with much reduced user effort.
 
 \begin{table}[!htb]
 \centering
@@ -686,24 +688,25 @@ Cm244 & 0.0 & 1.03E-3 & 9.84E-4 & -4.4
 
 The data presented in Table \ref{tab:g} displays the results of Bright-lite given the XSgen MOX
 reactor cross sections. Overall, the Bright-lite model obtains output compositions that
-are quite similar to the output recipe of VISION. For most actinides listed, the relativer error
+are quite similar to the output recipe of VISION. For most actinides listed, the relative error
 is less than 5\%, even for higher order species such as the curium nuclides.
 The differences with respect to some of the higher order actinides (Am241 and higher) most
 likely stem from the relatively high amount of Pu240. This suggests that Pu240 neutron capture
-cross section is lower in Bright-lite. A lower cross section could arrise from a difference in the cross
+cross section is lower in Bright-lite. The low Pu240 capture cross section thus lowers the equilibrium concentration of Pu241 and
+nuclides that derive from it. A lower cross section could arise from a difference in the cross
 section data sets used or in methodology; the pointwise flux used in the self shielding calculation could
-be different, the cross section data could be different, etc.
-The low Pu240 capture cross section thus lowers the equilibrium concentration of Pu241 and
-nuclides that derive from it.
+be different, the cross section data could be different, or similar input data issues. This highlights exactly 
+why XSgen was developed. Unfortunately in this case without the background data on the VISION recipes, XSgen 
+could not remove these input data issues. 
 
-Another potential causes of composition uncertainity is that the exact dimensions and behavior
+Another potential cause of composition uncertainity is that the exact dimensions and behavior
 of the VISION MOX reactor are not availble in the VSION database. In order to get the
 most accurate cross sections and compositions, XSgen must hav a full and complete reactor
 specification. Since such a specification was not available for this MOX case,
 a generic 17x17 LWR core was chosen instead. Thus the descrepencies seen in the output
 compositions in Table \ref{tab:g} are reasonable. Even without knowing the
 true MOX reactor used to formulate the VISION recipes, the resultant compositions line
-up well enough for the important fuel cycle nuclides.
+up well enough for the neutronically important nuclides.
 
 \section{Recipe Reactor Generation}
 
@@ -773,9 +776,8 @@ into the behavior of reactors, and by extension nuclear fuel cycles. Comparisons
 these models is important to understanding how the choice of model might impact the
 accuracy of the results. This work has demonstrated that XSgen is capable of
 providing one-group cross sections for a wide variety of reactor types.
-This provides a path forward for generating datasets for medium and low fidelity models
-such that fuel cycle scenarios choosing to use different modeling regimes may be compared
-on an even basis. Because equitable comparisons are now possible, the XSgen tool allows
+Producing a cross section data set using the exact same specifications for two different reactor models 
+can be done automatically. Because equitable comparisons are now possible, the XSgen tool allows
 researchers to understand how different reactor models affect the results of fuel cycle analysis.
 
 Additionally, XSgen provides a method for automating the generation of reactor types for
