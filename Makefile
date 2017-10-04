@@ -6,9 +6,9 @@ all: all-via-pdf
 
 all-via-pdf: $(manuscript).tex #$(references).bib
 	pdflatex $(latexopt) $(manuscript)
-	#bibtex $(manuscript $<).aux
-	#pdflatex $(latexopt) $(manuscript)
-	#pdflatex $(latexopt) $(manuscript)
+	bibtex $(manuscript).aux
+	pdflatex $(latexopt) $(manuscript)
+	pdflatex $(latexopt) $(manuscript)
 
 all-via-dvi:
 	latex $(latexopt) $(manuscript)
