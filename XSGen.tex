@@ -69,7 +69,7 @@ quick solvers allows for a significatly higher degree of modularity, flexibility
 for medium fidelity models over their low fidelity counterparts. Additionally, their average
 execution time is orders of magnitude lower than full neutron transport and multiphysics
 calculations. Examples of medium fidelity reactor models are CLASS\cite{class}
-and Bright-lite\cite{brightlite,flanagan}.
+and Bright-lite\cite{brightlite}.
 
 High fidelity models are constructed using neutronics calculations, Bateman
 equation solvers\cite{bateman1910, bateman}, or other coupled multiphysics algorithms. These models tend
@@ -216,7 +216,7 @@ the collapsed flux with $G$ groups and $E_g[MeV]$ bin boundaries. The partial en
 matrix $P$ is defined by the relations seen in Equation \ref{pem-relations}.
 Equation \ref{pem-relations} assumes that all energies are monotonically decreasing, namely
 that $E_{g+1} \le E_{g} \forall g\in G$ and $E_{h+1} \le E_{h} \forall h\in H$. Figure \ref{fig:bin_graph}
-demonstrates the relations shown in equation \ref(pem-relations}.
+demonstrates the relations shown in equation \ref{pem-relations}.
 \begin{equation}
 \label{pem-relations}
 P_{g,h} = \left\{
