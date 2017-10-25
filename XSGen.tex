@@ -1,4 +1,5 @@
-\documentclass{article}
+\documentclass[preview]{elsarticle}
+\usepackage{lineno,hyperref}
 \usepackage{tikz}
 \usepackage{array}
 \usepackage{calc}
@@ -7,6 +8,7 @@
 \usepackage{xspace}
 \usepackage{color}
 \usepackage{pgfplots}
+\bibliographystyle{elsarticle-num}
 \usetikzlibrary{shapes.geometric, arrows}
 
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
@@ -21,20 +23,37 @@
 \newcommand{\citeme}{\TODO{[Citation Needed]}}
 
 \begin{document}
-\title{XSgen: A Cross Section Generation Methodology}
-\date{\today}
-\author{Flanagan, Robert \and Scopatz, Anthony}
-\maketitle
-\onehalfspacing
 
-\section{Abstract}
-This work investigates a method for generate medium fidelity reactor model cross sections.
-The methodology used here is the coupling of a neutron transport software with a depletion
+\begin{frontmatter}
+
+\title{XSgen: A Cross Section Generation Methodology for Fuel Cycle Simulation}
+
+%% Group authors per affiliation:
+\author{Flanagan, Robert}
+\address{University of South Carolina}
+
+%% or include affiliations in footnotes:
+\author{Scopatz, Anthony}
+\address{University of South Carolina}
+
+
+\begin{abstract}
+This work investigates a method for generating medium fidelity reactor model cross sections.
+The methodology used here couples a neutron transport code with a depletion
 calculator. Together the two can be used to generate time dependent group cross sections
-for reactor models. This paper analyzes a methodology, XSgen, that performs this function
-and demonstrates the capabilities of XSgen to create datasets for a medium fidelity reactor
-model known as Bright-lite. The results of this work show that XSgen is capable of producing
-datasets that match industry standards for both uranium based LWR and MOX reactors. 
+for medium fidelity reactor models in fuel cycle simulation. This work analyzes XSgen, a software
+that performs the functions mentioned
+above. Addtionally, it is shown that XSgen is capable of creating datasets
+for a medium fidelity reactor model known as Bright-lite. The results of this work show
+that XSgen produces datasets that match NEA benchmarks for both uranium
+based LWR, and MOX reactors.
+\end{abstract}
+
+\begin{keyword}
+Group Cross Section Generation, Nuclear Fuel Cycle, Medium Fidelity
+\end{keyword}
+
+\end{frontmatter}
 
 \section{Introduction}
 
@@ -44,14 +63,14 @@ paradigms provides different benefits to a fuel cycle simulation but comes with 
 either accuracy, computational effort, or both. The methodology demonstrated in this work, XSgen, 
 is a new method for automating the generation of cross section datasets for medium and low fidelity models. 
 These datasets use fully described data, allowing users to compare different models under known
-conditions and remove any ambiguity that might stem from unknown reactor specification values in a 
+conditions and remove any ambiguity that might stem from unknown reactor specification in a 
 given dataset. This work is a demonstration of the XSgen methodology and focuses on how this methodology
 impacts the cross sections derived from it. 
 
-Accurately generately cross section datasets used in fuel cycle simulation allow for the minimization
-of error bars of mass flows between nuclear facilities, whether they use low or medium fidelity models.
+Accurately generating cross section datasets used in fuel cycle simulation allow for the minimization
+of mass flow errors between nuclear facilities, whether they use low or medium fidelity models.
 While the work in this discussion does not address, in depth, the impact of XSgen on nuclear fuel cycles 
-it is important to mention that this work sets up the basis for using XSgen as a tool in fuel cycle 
+it is important to mention that this work sets up the basis for using XSgen as a tool for verifying fuel cycle 
 simulation.  
 
 Low fidelity models are those models that include limited to no physical computations at run time.
@@ -80,8 +99,8 @@ execution time is orders of magnitude lower than full neutron transport and mult
 calculations. Examples of medium fidelity reactor models are CLASS\cite{class}
 and Bright-lite\cite{brightlite}.
 
-High fidelity models are constructed using neutronics calculations, Bateman
-equation solvers\cite{bateman1910, bateman}, or other coupled multiphysics algorithms. These models tend
+High fidelity models are constructed using neutronics calculations, depletion
+solvers\cite{bateman1910, bateman}, or other coupled multiphysics algorithms. These models tend
 to require information on the complete reactor design in order to be executed.
 Additionally, due to their higher accuracy, these models require a proportionally heavier amount
 of computation. An example of a high fidelity reactor model is the
@@ -96,7 +115,7 @@ disadvantage factors, batch physics, and fuel blending. Alternitavely, CLASS use
 reactor input and output recipes and recursive neural networks\cite{classneural} to dynamically determine
 reactor behavior. To understand how these different modeling choices impact a fuel cycle
 scenario, it is important for the models to have same fundemental information basis.
-For example, the one-group cross sections must be the same.
+At a minimum, the one-group cross sections must be the same.
 
 At present, each medium fidelity model uses its own method for generating input datasets.
 This implies that any methodlogical comparison between would be (at least partially) invalid
@@ -112,7 +131,7 @@ in the cooresponding BSD-licensed XSgen software package\cite{xsgen}.
 XSgen couples a neutron transport code with a depletion solver to automate the generation of
 medium fidelity reactor model datasets. XSgen uses OpenMC\cite{openmc} as neutron transport.
 A one thousand group, logarithimically spaced flux is extracted from OpenMC. The lower bound for 
-this group structure being 1E-9MeV and the upper bound set to 10MeV. This flux is
+this group structure is 1E-9MeV and the upper bound is 10MeV. This flux is
 measured in the fuel region of supplied reactor geometry. This flux is fed into a cross
 section collapser to generate one-group or multi-group cross sections. This collapse is
 performed by PyNE\cite{pyne}. Finally, either the
@@ -130,10 +149,10 @@ XSgen can also be used to set up more accurate comparisons between low fidelity 
 models and medium fidelity reactor model types. This is made possible because XSgen may also
 simulate a fuel bundle well past its effective lifetime in the core. The data generated by an
 XSgen run of this type contains enough information to build out an estimate of core composition
-at discharge using reactor batch physics discussed in section \S\ref{sec:recipe}.
+at discharge using reactor batch physics which is discussed in section \S\ref{sec:recipe}.
 
-The following sections will demonstrate the workflow and capabilities of XSgen. The workflow demonstrated in section 
-\S\ref{sec-workflow} demonstrates 
+The following sections will demonstrate the workflow and capabilities of XSgen. The workflow described in section 
+\S\ref{sec-workflow} shows 
 both the computational work as well as the mathematical basis. Following that is a description of the direct cross 
 section results from XSgen in section \S\ref{sec:crosssection}. Finally, XSgen is used for several verification cases with current reactor 
 technology in sections \S\ref{sec:LWRv}, \S\ref{sec:startupv}, and \S\ref{sec-mox-benchmark}. 
@@ -147,11 +166,11 @@ of the reactor core using a Monte Carlo neutron transport simulation. The primar
 this is a highly resolved flux spectrum. This spectrum is then collapsed with a standard
 cross section database and converted into a suite of one-group cross sections for a reactor
 at time step $t$ [days] after the reactor has started up. These one-group cross sections are
-then used by a depletion solver to compute the burnup[MWd/kgIHM], neutron production rate[n/s], neutron
-destruction rate[n/s], and transmutation matrices. The value of $t$ is set by the user when XSgen
+then used by a depletion solver to compute the burnup [MWd/kgIHM], neutron production rate [n/s], neutron
+destruction rate [n/s], and transmutation matrices. The value of $t$ is set by the user when XSgen
 is executed. The composition of the material at the end of the time step is then submitted
 back to the neutron transport solver as input. This process is repeated until the maximum time
-step is reached. This type of linkage has been done in other softwares, for example LOOP\cite{loop}. However, 
+step is reached. This type of linkage has been made in other softwares, for example LOOP\cite{loop}. However, 
 XSgen aims to take the technique further by expanding the physics in the cross section collapse, and providing 
 automatic linkage with medium fidelity models.  
 
@@ -189,14 +208,14 @@ automatic linkage with medium fidelity models.
 
 OpenMC was used as the reference neutron transport calculator for modeling reactors.
 It was chosen due to its availablity (it is BSD licensed\cite{open3bsd}), its ability to quickly perform
-reactor oriented calculations\cite{serpentvmonte}, and it capability to compute scattering
+reactor oriented calculations\cite{serpentvmonte}, and its capability to compute scattering
 kernels. Currently, XSgen only obtains the group flux values from OpenMC. It extracts
 these for each timestep.
 
 Input templates for OpenMC can be specified in the XSgen run control file.
 New templates may be constructed for a reactor design by creating a new input file for OpenMC
-and templating it according to a set of field variabless that XSgen provides.
-XSgen also provides standard templates representing pressurized water reactor (PWR)
+and templating it according to a set of field variables that XSgen provides.
+XSgen comes stock with standard templates representing pressurized water reactor (PWR)
 and fast reactor (FR) lattices. More standard templates may be added to XSgen in the future.
 
 \subsection{Cross Section Collapse via PyNE}
@@ -225,7 +244,7 @@ the collapsed flux with $G$ groups and $E_g[MeV]$ bin boundaries. The partial en
 matrix $P$ is defined by the relations seen in Equation \ref{pem-relations}.
 Equation \ref{pem-relations} assumes that all energies are monotonically decreasing, namely
 that $E_{g+1} \le E_{g} \forall g\in G$ and $E_{h+1} \le E_{h} \forall h\in H$. Figure \ref{fig:bin_graph}
-demonstrates the relations shown in equation \ref{pem-relations}.
+displays the relations shown in Equation \ref{pem-relations}.
 \begin{equation}
 \label{pem-relations}
 P_{g,h} = \left\{
@@ -269,7 +288,7 @@ groupwise cross section for $i^\mathrm{th}$ nuclide and the $r^\mathrm{th}$ reac
 \begin{equation}
 \label{pointwise-collapse}
 \sigma_{r,g}^i = \frac{1}{2} \frac{\sum_{E_p\ge E_{g+1}}^{E_p\le E_g}
-                                   \left(\sigma(E_p)+\sigma(E_{p+1})\right)
+                                   \left(\sigma_r^i(E_p)+\sigma_r^i(E_{p+1})\right)
                                    \left(E_{p+1}-E_{p}\right)}
                                   {E_g-E_{g+1}}
 \end{equation}
@@ -285,7 +304,8 @@ Here $\sigma_{r}^i$ represents the one-group cross section of the $r^\mathrm{th}
 channel for the $i^\mathrm{th}$ nuclide, and $\overrightarrow{\sigma_{r,g}^i \phi_g}$ is the
 elementwise multplication of the group constants and the group fluxes.
 This process is repeated for all nuclides and reaction channels. The resultant one-group
-cross section dataset is used to construct a custom ORIGEN v2.2 TAPE9 file\cite{origen2}.
+cross section dataset is used to construct a custom ORIGEN v2.2 TAPE9 file\cite{origen2}
+for each time step.
 
 PyNE also enables the user to incorperate self-shielding effects \cite{bondarenko} into the cross sections
 computed for XSgen. It does so by building an energy dependent function of weights for each
@@ -295,9 +315,9 @@ effective cross section is of that nuclide. Self-shielding weights are computed 
 expression in Equation \ref{ssw} \cite{weights}.
 \begin{equation}
 \label{ssw}
-\omega_{g}^i=\left(\frac{\sum_{i\neq j}N_i \, \sigma_{t,g}^j}{N_i}+\sigma_{t,g}^i\right)^{-1}
+\omega_{g}^i=\left(\frac{\sum_{j\neq i}N_j \, \sigma_{t,g}^j}{N_i}+\sigma_{t,g}^i\right)^{-1}
 \end{equation}
-In this expression, $I$ represents the set of all nuclides, and $i$, and $j$ index $I$.
+In this expression, $I$ represents the set of all nuclides, and $i$ and $j$ index $I$.
  $N_j$ represents the number density [1/cm$^3$] of
 nuclide $j$, and $\sigma_{t,g}^i$ is the flux weighted total cross section of
 the $i^\mathrm{th}$ nuclide in energy bin $g$.
@@ -306,7 +326,7 @@ The total cross sections in Equation \ref{ssw} may be computed from continuous e
 pointwise ENDF or ACE formatted data for those species where such data sets are available.
 The method for computing the  $\sigma_{t,g}^i$ is the same as in Equation
 \ref{pointwise-collapse} \& \ref{pointwise-pem} for a single energy group.  However,
-the challenge in this circumstance is obtaining a pointwise flux. OpenMC and does not output
+the challenge in this circumstance is obtaining a pointwise flux. OpenMC does not output
 a pointwise flux, so a surrogate pointwise flux is used which approximates the normalized shape
 of the reactor. The equation for a surrogate pointwise flux for a PWR may be seen in
 Equation \ref{pointwise-flux} \cite{spectrum}.
@@ -318,7 +338,7 @@ Equation \ref{pointwise-flux} \cite{spectrum}.
     \frac{1}{\sqrt{2E*1e6}} + 0.453e^{-1.036E}\cdot\sinh{\sqrt{2.29E}} & : E > 0.155\times 10^{-6} \\
 \end{cases}
 \end{equation}
-Here, $k$ is the Boltzman constant ($[\frac{eV}{K}]$), $T$ is the temperature [K],
+Here, $k$ is the Boltzman constant $[\frac{eV}{K}]$, $T$ is the temperature [K],
 and E is the energy [MeV]. Equation \ref{pointwise-flux} is displayed in
 Figure \ref{fig:therm}.
 \begin{figure}[h]
@@ -358,9 +378,9 @@ necessary to include - for resonance cross sections and low energy capture cross
 \subsection{Depletion via ORIGEN v2.2}
 \label{sec:origen}
 
-Once a TAPE9 file (the cross section format of ORIGEN v2.2) has been constructed by XSgen, it is
+After a TAPE9 file (the cross section format of ORIGEN v2.2) has been constructed by XSgen, it is
 used to perform two types of burnup calculations. The first is performed on the fuel and
-includes the entire fuel material composition. Once this is done the material at the
+includes the entire fuel material composition. Once this is done, the material at the
 end of the fuel burn is passed back to OpenMC to start the next XSgen time step iteration.
 
 The second type of depletion calculation is used to build a transmutation dataset for a
@@ -396,7 +416,7 @@ of the fuel at that burnup\cite{brightlite, linear}.
 Note that this technique assumes that all batches are independent of one another
 Additionally, Equation \ref{burnup-n} works best for reactors that have a decreasing
 criticality over a cycle. Specifically, it does not provide valid recipes for accelerator
-driven systems or breeder reactors.
+driven systems.
 
 \section{Cross Section Generation Results}
 \label{sec:crosssection}
@@ -426,15 +446,15 @@ Coolant Density [g/cc] & 0.73 \\
 \end{table}
 
 \begin{figure}
+\includegraphics[scale=0.8]{U235xs.eps}
 \caption{Cross Section Behavior of U235 in 3.5\% enriched LWR.
          The U235 is subjected to a constant flux of $3\times10^{14}[n/s/cm^2]$.}
-\includegraphics[scale=0.8]{U235xs.eps}
 \label{fig:u235xs}
 \end{figure}
 
 \begin{figure}
-\caption{Cross Section Behavior of U238 in 3.5\% enriched LWR. The U238 is subjected to a constant flux of $3\times10^{14}[n/s/cm^2]$.}
 \includegraphics[scale=0.8]{U238xs.eps}
+\caption{Cross Section Behavior of U238 in 3.5\% enriched LWR. The U238 is subjected to a constant flux of $3\times10^{14}[n/s/cm^2]$.}
 \label{fig:u238xs}
 \end{figure}
 
@@ -664,7 +684,7 @@ to less build up of the high order actinides.
 
 \section{MOX Verification}
 \label{sec-mox-benchmark}
-To demonstrate the full capability of XSgen the method must be applied to more advanced
+To demonstrate the full capability of XSgen, the method must be applied to more advanced
 reactor types than base case LWRs. To this end, XSgen was used to generate a mixed-oxide (MOX)
 fuel library for Bright-lite. This was then applied to a single pass MOX fuel cycle scenario.
 In order to maintain a valid comparison, the input fuel composition into the Bright-lite MOX
@@ -750,7 +770,7 @@ cooresponding XSgen reactor discharge recipes.
 \caption{Comparison of VISION and XSgen for the generation of a 33 MWd/kgIHM Burnup.}
 \label{tab:recipe}
 \begin{tabular}{llll}
-Nuclide & VISION & XSgen & \$Diff \\
+Nuclide & VISION & XSgen & \%Diff \\
 \hline
 U235 & 8.06E-03 & 7.84E-03 & -2.85 \\
 U238 & 9.44E-01 & 9.67E-01 & 2.36 \\
@@ -800,10 +820,15 @@ Future work aims to expand this coupling to include other medium fidelity models
 This will allow for comparisons between medium fidelity models to be performed using the
 same source for datasets. Moreover, XSgen currently does not have a stock template for
 fast reactor designs or accelerator driven systems. Specialized reactor templates may be
-needed for future fuel cycle options analysis campaigns.
+needed for future fuel cycle analysis campaigns.
+
+\section{Acknowledgements}
+The preparers of this work would like to thank Dr. Erich Schneider, and Dr. Cem Bagdatlioglu for their
+support. Their efforts provided the researchers with the knowledge on how to link the XSgen methodology
+to the Bright-lite infrustructure. Additional thanks to the Nuclear Engineering University Program for
+funding this work under project number 12-4065.
 
 \bibliography{XSgen}
-\bibliographystyle{ieeetr}
 
 \end{document}
 
