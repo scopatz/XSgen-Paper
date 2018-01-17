@@ -43,6 +43,8 @@ y1 = flux32
 x2 = bins1000
 y2 = flux1000
 
+print(x1, x2)
+
 fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
 
@@ -57,6 +59,7 @@ ax1.set_xscale('log')
 ax1.set_yscale('log')
 ax2.set_xscale('log')
 ax2.set_yscale('log')
+#ax2.set_ylim(top=2.5)
 lns = small + large
 labs = [l.get_label() for l in lns]
 ax1.legend(lns, labs, loc=0)
